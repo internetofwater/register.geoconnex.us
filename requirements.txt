@@ -1,0 +1,6 @@
+click>7,<=8
+Flask
+pygeoapi
+PyGithub
+PyYAML
+requests
