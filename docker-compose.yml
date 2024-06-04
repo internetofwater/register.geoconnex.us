@@ -1,0 +1,9 @@
+services:
+  register-geoconnex-us:
+    build:
+      context: .
+    container_name: register-geoconnex-us
+    ports:
+      - "80:80"
+    environment:
+      PYGEOREGISTER_URL: http://localhost
