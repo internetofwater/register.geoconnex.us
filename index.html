@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload CSV to Geoconnex</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="static/css/default.css">
+</head>
+<body>
+    <div class="crumbs">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <a href="https://geoconnex.us">
+                        <img src="static/img/logo.png"
+                             title="register.geoconnex.us" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Upload CSV to Geoconnex</h1>
+    <form id="uploadForm">
+        <label for="namespace">Namespace:</label>
+        <input type="text" id="namespace" name="namespace" required>
+
+        <label for="accesstoken">GitHub Access Token:</label>
+        <input type="password" id="accesstoken" name="accesstoken" required>
+        
+        <label for="file">Choose CSV file:</label>
+        <input type="file" id="file" name="file" accept=".csv" required>
+        
+        <button type="submit">Upload and Create Pull Request</button>
+    </form>
+    
+    <div id="result"></div>
+
+    <!-- Contribution Documentation -->
+    <div id="markdownContent" class="container-narrow"></div>
+
+    <script>
+        // Fetch and render Markdown content from GitHub
+        const url = 'https://api.github.com/repos/internetofwater/geoconnex.us/contents/CONTRIBUTING.md';
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Decode content from Base64
+                const markdown = atob(data.content);
+                const html = marked.parse(markdown);
+                document.getElementById('markdownContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error fetching Markdown:', error);
+                document.getElementById('markdownContent').innerHTML = '<p>Error loading Markdown content.</p>';
+            });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
