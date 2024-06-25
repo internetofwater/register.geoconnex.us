@@ -3,21 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload CSV to Geoconnex</title>
+    <title>Geoconnex Registration Service</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="icon" href="static/img/favicon.ico" type="image/x-icon"> <!-- Add this line for the favicon -->
     <link rel="stylesheet" href="static/css/default.css">
+
+    <meta name="description" content="Upload CSV to Geoconnex and create a pull request.">
+    <meta name="keywords" content="CSV, upload, Geoconnex, pull request, GitHub, API">
+    <meta property="og:title" content="Geoconnex Registration Service">
+    <meta property="og:description" content="Upload CSV to Geoconnex and create a pull request.">
+    <meta property="og:image" content="static/img/logo.png">
+    <meta property="og:url" content="https://register.geoconnex.us">
+    <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
     <div class="crumbs">
         <div class="container">
-            <div class="row">
-                <div class="col-sm-12">
-                    <a href="https://geoconnex.us">
-                        <img src="static/img/logo.png"
-                             title="register.geoconnex.us" />
-                    </a>
-                </div>
-            </div>
+            <a href="https://geoconnex.us">
+                <img src="static/img/logo.png"
+                        title="register.geoconnex.us" />
+            </a>
         </div>
     </div>
 
@@ -25,9 +30,6 @@
     <form id="uploadForm">
         <label for="namespace">Namespace:</label>
         <input type="text" id="namespace" name="namespace" required>
-
-        <label for="accesstoken">GitHub Access Token:</label>
-        <input type="password" id="accesstoken" name="accesstoken" required>
         
         <label for="file">Choose CSV file:</label>
         <input type="file" id="file" name="file" accept=".csv" required>
@@ -38,7 +40,10 @@
     <div id="result"></div>
 
     <!-- Contribution Documentation -->
-    <div id="markdownContent" class="container-narrow"></div>
+    <button class="accordion container-narrow">Contribution Documentation</button>
+    <div class="panel">
+        <div id="markdownContent" class="container-medium"></div>
+    </div>
 
     <script>
         // Fetch and render Markdown content from GitHub
@@ -61,7 +66,22 @@
                 console.error('Error fetching Markdown:', error);
                 document.getElementById('markdownContent').innerHTML = '<p>Error loading Markdown content.</p>';
             });
+
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        }
     </script>
-    <script src="script.js"></script>
+    <script src="static/js/script.js"></script>
 </body>
 </html>
