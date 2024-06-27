@@ -6,14 +6,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px; /* Added padding for small screens */
+    padding: 10px;
 }
 
 .crumbs {
     width: 100%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    padding: 10px; /* Added padding for small screens */
+    padding: 10px;
 }
 
 .container {
@@ -61,6 +61,25 @@ label {
     font-weight: bold;
 }
 
+.custom-file-upload {
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+    border: 1px solid #1B335F;
+    border-radius: 4px;
+    color: #1B335F;
+    background-color: white;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+.custom-file-upload:hover {
+    background-color: #00A087;
+    border-color: #00A087;
+}
+input[type="file"] {
+    display: none;
+}
+
 input[type="text"],
 input[type="file"],
 input[type="password"],
@@ -84,6 +103,7 @@ button {
     color: white;
     border: none;
     cursor: pointer;
+    font-size: 16px;
 }
 
 button:hover {

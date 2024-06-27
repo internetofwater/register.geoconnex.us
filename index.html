@@ -31,7 +31,10 @@
         <label for="namespace">Namespace:</label>
         <input type="text" id="namespace" name="namespace" required>
         
-        <label for="file">Choose CSV file:</label>
+        <label for="file">CSV Mapping:</label>
+        <label for="file" class="custom-file-upload">
+            Choose File
+        </label>
         <input type="file" id="file" name="file" accept=".csv" required>
         
         <button type="submit">Upload and Create Pull Request</button>
