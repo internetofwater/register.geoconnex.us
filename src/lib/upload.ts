@@ -1,38 +1,3 @@
-// Fetch and render Markdown content from GitHub
-const url = 'https://api.github.com/repos/internetofwater/geoconnex.us/contents/CONTRIBUTING.md';
-
-fetch(url)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Decode content from Base64
-        const markdown = atob(data.content);
-        const html = marked.parse(markdown);
-        document.getElementById('markdownContent').innerHTML = html;
-    })
-    .catch(error => {
-        console.error('Error fetching Markdown:', error);
-        document.getElementById('markdownContent').innerHTML = '<p>Error loading Markdown content.</p>';
-    });
-
-var acc = document.getElementsByClassName("accordion");
-var i;
-
-for (i = 0; i < acc.length; i++) {
-    acc[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.display === "block") {
-            panel.style.display = "none";
-        } else {
-            panel.style.display = "block";
-        }
-    });
-}
 
 document.getElementById('uploadForm').addEventListener('submit', async function(event) {
     event.preventDefault();
