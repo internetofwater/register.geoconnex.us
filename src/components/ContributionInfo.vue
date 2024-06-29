@@ -1,44 +1,67 @@
-
-
 <template>
-    <div>
-        <button class="accordion container-narrow" @click="loadMarkdown">Contribution Documentation</button>
-        <div class="panel">
-            <div id="markdownContent" class="container-medium"></div>
-        </div>
-    </div>
+    <v-expansion-panels class="contribution-button" @click="toggleMarkdown">
+        <v-expansion-panel class="expansion-panel" title="Contribution Documentation">
+            <v-card v-if="showing">
+                <v-card-text class="markdown-card-text pa-10">
+                    <div id="markdownContainer">
+                        <div id="markdownContent" class="container-medium" v-html="renderedMarkdown"></div>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-expansion-panel>
+    </v-expansion-panels>
 </template>
 
+<script lang="ts">
+import { marked } from 'marked';
+import { defineComponent, ref } from 'vue';
+import { fetchMarkdownContent } from '../lib/helpers';
 
-<script>
-import { Marked } from 'marked';
+export default defineComponent({
+    setup() {
+        const showing = ref(false);
+        const renderedMarkdown = ref<string>('');
 
-export default {
-    data() {
+        const toggleMarkdown = async () => {
+            showing.value = !showing.value;
+
+            if (showing.value) {
+                try {
+                    const url = 'https://api.github.com/repos/internetofwater/geoconnex.us/contents/CONTRIBUTING.md';
+                    const markdown = await fetchMarkdownContent(url);
+                    const html = await marked(markdown);
+                    renderedMarkdown.value = html;
+                } catch (error) {
+                    console.error('Error fetching or rendering markdown:', error);
+                    renderedMarkdown.value = 'Error fetching or rendering markdown.';
+                }
+            } else {
+                renderedMarkdown.value = '';
+            }
+        };
+
         return {
-            url: 'https://raw.githubusercontent.com/Geoconnex/geoconnex/main/CONTRIBUTING.md'
-        }
-    },
-    methods: {
-        loadMarkdown() {
-            fetch(this.url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.text(); // Use response.text() for fetching text content
-                })
-                .then(markdown => {
-                    const html = marked(markdown);
-                    document.getElementById('markdownContent').innerHTML = html;
-                })
-                .catch(error => {
-                    console.error('Error fetching Markdown:', error);
-                    document.getElementById('markdownContent').innerHTML = '<p>Error loading Markdown content.</p>';
-                });
-        }
-    },
-};
+            showing,
+            renderedMarkdown,
+            toggleMarkdown
+        };
+    }
+});
 </script>
 
-<style scoped></style>
+<style scoped>
+.contribution-button {
+    margin: 0 auto;
+    text-align: center;
+    width: 35%;
+}
+
+.expansion-panel {
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.markdown-card-text {
+    padding: 16px; /* Adjust padding as needed */
+}
+</style>

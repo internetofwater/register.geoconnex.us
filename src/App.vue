@@ -1,9 +1,8 @@
-<script setup lang="js">
+<script setup lang="ts">
 import UploadForm from './components/UploadForm.vue';
 import PageHeader from './components/PageHeader.vue';
 import ContributionInfo from './components/ContributionInfo.vue';
 import '@mdi/font/css/materialdesignicons.css'; 
-import { Marked } from 'marked';
 </script>
 
 <template>
