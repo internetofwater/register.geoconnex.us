@@ -72,6 +72,7 @@ export default defineComponent({
       }
       catch (error) {
         this.error = error instanceof Error ? error.message : String(error);
+        this.result = '';
       }
 
       this.inProgress = false;

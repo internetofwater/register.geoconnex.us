@@ -13,7 +13,6 @@ async function createBranch(
   const baseBranchUrl = `https://api.github.com/repos/${repo}/git/refs/heads/${baseBranch}`
   const baseBranchData = await fetch(baseBranchUrl, { headers }).then((res) => res.json())
   const newBranchUrl = `https://api.github.com/repos/${repo}/git/refs`
-  console.log(baseBranchData)
   const newBranchData = {
     ref: `refs/heads/${branchName}`,
     sha: baseBranchData.object.sha
@@ -37,10 +36,8 @@ export async function ensureContentIsNew(
   content: string
 ) {
   /* Check if the file already exists, and if it does, check if the content is the same. If so, throw an error*/
-
   const fileUrl = `https://api.github.com/repos/${repo}/contents/${remoteFilePath}?ref=${baseBranch}`
 
-  console.log(fileUrl)
   // We don't need to pass in headers for auth, since we are only read only here
   const headers = {
     'Content-Type': 'application/json'
@@ -49,15 +46,15 @@ export async function ensureContentIsNew(
     method: 'GET',
     headers: headers
   })
+  const fileData = await fileResponse.json()
 
   if (fileResponse.ok) {
-    const fileData = await fileResponse.json()
-
     const existingFileContent = atob(fileData.content.replace(/\n/g, ''))
     if (existingFileContent === content) {
       throw new Error('No changes detected; skipping pull request.')
     }
   }
+  return fileData.sha
 }
 
 export async function uploadData(
@@ -66,13 +63,15 @@ export async function uploadData(
   remoteFilePath: string,
   newBranch: string,
   content: string,
-  namespace: string
+  namespace: string,
+  sha: string
 ) {
   const uploadUrl = `https://api.github.com/repos/${repo}/contents/${remoteFilePath}`
   const uploadData = {
     message: `Add CSV file to ${namespace}`,
     content: content,
-    branch: newBranch
+    branch: newBranch,
+    sha: sha
   }
   const uploadResponse = await fetch(uploadUrl, {
     method: 'PUT',
@@ -121,15 +120,17 @@ export async function submitData(namespace: string, file: File): Promise<string>
 
   const newBranch = `upload-${namespace}-${Date.now()}`
   const remoteFilePath = `namespaces/${namespace}/${file.name}`
-  const content = await file.text().then((text) => btoa(text))
+  const readableContent = await file.text()
+  const b64content = btoa(readableContent)
+
   const repo = Config.repo
   const baseBranch = Config.baseBranch
 
+  const validatedSha = await ensureContentIsNew(repo, baseBranch, remoteFilePath, readableContent)
+
   await createBranch(headers, repo, baseBranch, newBranch)
 
-  await ensureContentIsNew(repo, baseBranch, remoteFilePath, content)
-
-  await uploadData(headers, repo, remoteFilePath, newBranch, content, namespace)
+  await uploadData(headers, repo, remoteFilePath, newBranch, b64content, namespace, validatedSha)
 
   const result = await createPR(headers, repo, baseBranch, newBranch, namespace)
 
