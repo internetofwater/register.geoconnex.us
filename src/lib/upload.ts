@@ -31,7 +31,6 @@ async function createBranch(
 }
 
 export async function ensureContentIsNew(
-  headers: HeadersInit,
   repo: string,
   baseBranch: string,
   remoteFilePath: string,
@@ -41,24 +40,22 @@ export async function ensureContentIsNew(
 
   const fileUrl = `https://api.github.com/repos/${repo}/contents/${remoteFilePath}?ref=${baseBranch}`
 
+  console.log(fileUrl)
+  // We don't need to pass in headers for auth, since we are only read only here
+  const headers = {
+    'Content-Type': 'application/json'
+  }
   const fileResponse = await fetch(fileUrl, {
-    headers
+    method: 'GET',
+    headers: headers
   })
 
-  // We expect it to be a 404 when uploading a new file but other error codes should be thrown
-  if (!fileResponse.ok && fileResponse.status !== 404) {
-    throw new Error(`Failed to get file: ${fileResponse.status} ${fileResponse.statusText}`)
-  }
+  if (fileResponse.ok) {
+    const fileData = await fileResponse.json()
 
-  // If the file already exists, throw an error if the content is also the same
-  const fileData = await fileResponse.json()
-  if (fileResponse.status !== 404) {
     const existingFileContent = atob(fileData.content.replace(/\n/g, ''))
-    console.log(existingFileContent, content)
     if (existingFileContent === content) {
       throw new Error('No changes detected; skipping pull request.')
-    } else {
-      console.log('Content has changed; creating pull request.')
     }
   }
 }
@@ -130,7 +127,7 @@ export async function submitData(namespace: string, file: File): Promise<string>
 
   await createBranch(headers, repo, baseBranch, newBranch)
 
-  await ensureContentIsNew(headers, repo, baseBranch, remoteFilePath, content)
+  await ensureContentIsNew(repo, baseBranch, remoteFilePath, content)
 
   await uploadData(headers, repo, remoteFilePath, newBranch, content, namespace)
 
