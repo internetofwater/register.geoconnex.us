@@ -1,5 +1,8 @@
 name: Build Vue
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
   build_vue:
     runs-on: ubuntu-latest
@@ -9,6 +12,6 @@ jobs:
       - id: Build-Vue
         uses: xRealNeon/VuePagesAction@1.0.1
         with:
-          username: 'internetofwater'
+          username: ${{ github.repository_owner }}
           reponame: 'register.geoconnex.us'
           token: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
