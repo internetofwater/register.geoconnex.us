@@ -16,15 +16,19 @@
                 <v-btn type="submit" color="#1B335F">
                   Upload and Create Pull Request
                 </v-btn>
+                <div class="justify-center py-5">
+                  <v-progress-circular v-if="inProgress" indeterminate color="primary"></v-progress-circular>
+                </div>
               </v-col>
             </v-row>
           </v-container>
           <v-fade-transition>
-            <v-alert color="error" icon="$error" title="Error submitting PR" :text="error" v-if="error"></v-alert>
+            <v-alert color="error" icon="$error" title="Error submitting PR" :text="error"
+              v-if="error && !inProgress"></v-alert>
           </v-fade-transition>
           <v-fade-transition>
             <v-alert color="success" icon="$success" title="PR Submitted" :text="result"
-              v-if="!error && result !== ''"></v-alert>
+              v-if="!error && result !== '' && !inProgress"></v-alert>
           </v-fade-transition>
         </v-form>
       </v-col>
@@ -33,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { submitPR } from '@/lib/upload';
+import { submitData } from '@/lib/upload';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -44,6 +48,7 @@ export default defineComponent({
       comments: '',
       error: '',
       result: '',
+      inProgress: false
     };
   },
   methods: {
@@ -61,12 +66,15 @@ export default defineComponent({
       }
 
       try {
-        const result = await submitPR(this.namespace, this.file);
+        this.inProgress = true;
+        const result = await submitData(this.namespace, this.file);
         this.result = result;
       }
       catch (error) {
         this.error = error instanceof Error ? error.message : String(error);
       }
+
+      this.inProgress = false;
 
     }
   }
