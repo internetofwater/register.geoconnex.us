@@ -20,8 +20,12 @@
             </v-row>
           </v-container>
           <v-fade-transition>
-          <v-alert color="error" icon="$error" title="Error submitting PR" :text="error" v-if="error"></v-alert>
-        </v-fade-transition>
+            <v-alert color="error" icon="$error" title="Error submitting PR" :text="error" v-if="error"></v-alert>
+          </v-fade-transition>
+          <v-fade-transition>
+            <v-alert color="success" icon="$success" title="PR Submitted" :text="result"
+              v-if="!error && result !== ''"></v-alert>
+          </v-fade-transition>
         </v-form>
       </v-col>
     </v-row>
@@ -29,6 +33,7 @@
 </template>
 
 <script lang="ts">
+import { submitPR } from '@/lib/upload';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -36,13 +41,15 @@ export default defineComponent({
     return {
       namespace: '',
       file: null,
-      error: ''
+      comments: '',
+      error: '',
+      result: '',
     };
   },
   methods: {
-    submitForm() {
+    async submitForm() {
       this.error = '';
-      // Handle form submission here
+      this.result = '';
       if (this.namespace.trim() === '') {
         this.error = 'Namespace is required';
         return;
@@ -53,7 +60,14 @@ export default defineComponent({
         return;
       }
 
-      submitPR(this.namespace, this.file);
+      try {
+        const result = await submitPR(this.namespace, this.file);
+        this.result = result;
+      }
+      catch (error) {
+        this.error = error instanceof Error ? error.message : String(error);
+      }
+
     }
   }
 })

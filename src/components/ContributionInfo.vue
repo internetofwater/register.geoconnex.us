@@ -56,12 +56,14 @@ export default defineComponent({
     width: 35%;
 }
 
+
 .expansion-panel {
     background-color: #f4f4f9;
     color: #333;
 }
 
 .markdown-card-text {
-    padding: 16px; /* Adjust padding as needed */
+    padding: 16px;
+    /* Adjust padding as needed */
 }
 </style>

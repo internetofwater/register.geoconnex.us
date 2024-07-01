@@ -1,75 +1,99 @@
-function submitPR(namespace: string, file: File) {
+const repo = 'internetofwater/geoconnex.us'
+const baseBranch = 'master'
 
-    const hexEncoded = '6768705f6575677271533031436b494a6c3842626d4d55786f4261653357424f3643317645684657';
-    const bytes = new Uint8Array(hexEncoded.match(/[\da-f]{2}/gi)!.map(h => parseInt(h, 16)));
-    const decoder = new TextDecoder('utf-8');
-    const token = decoder.decode(bytes);
+async function createBranch(headers: HeadersInit, branchName?: string) {
+  const baseBranchUrl = `https://api.github.com/repos/${repo}/git/refs/heads/${baseBranch}`
+  const baseBranchData = await fetch(baseBranchUrl, { headers }).then((res) => res.json())
+  const newBranchUrl = `https://api.github.com/repos/${repo}/git/refs`
+  console.log(baseBranchData)
+  const newBranchData = {
+    ref: `refs/heads/${branchName}`,
+    sha: baseBranchData.object.sha
+  }
 
-    const headers = {
-        'Authorization': `token ${token}`,
-        'Content-Type': 'application/json'
-    };
+  const newBranchResponse = await fetch(newBranchUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(newBranchData)
+  })
 
-    const repo = 'internetofwater/geoconnex.us';
-    const baseBranch = 'master';
-    const newBranch = `upload-${namespace}-${Date.now()}`;
-    const filePath = `namespaces/${namespace}/${file.name}`;
+  if (!newBranchResponse.ok) {
+    throw new Error('Error creating new branch.')
+  }
+}
 
-    try {
-        // Read the file and encode it in Base64
-        const content = file.text().then(text => btoa(text));
+export async function submitPR(namespace: string, file: File): Promise<string> {
+  const hexEncoded =
+    '6768705f6575677271533031436b494a6c3842626d4d55786f4261653357424f3643317645684657'
+  const bytes = new Uint8Array(hexEncoded.match(/[\da-f]{2}/gi)!.map((h) => parseInt(h, 16)))
+  const decoder = new TextDecoder('utf-8')
+  const token = decoder.decode(bytes)
 
-        // Step 1: Create a new branch
-        const baseBranchUrl = `https://api.github.com/repos/${repo}/git/refs/heads/${baseBranch}`;
-        const baseBranchData = fetchJson(baseBranchUrl, headers);
+  const headers = {
+    Authorization: `token ${token}`,
+    'Content-Type': 'application/json'
+  }
 
-        const newBranchUrl = `https://api.github.com/repos/${repo}/git/refs`;
-        const newBranchData = {
-            ref: `refs/heads/${newBranch}`,
-            sha: baseBranchData.object.sha
-        };
-        const newBranchResponse = await fetchJson(newBranchUrl, headers, 'POST', JSON.stringify(newBranchData));
+  const newBranch = `upload-${namespace}-${Date.now()}`
+  const filePath = `namespaces/${namespace}/${file.name}`
 
-        // Step 2: Check if the file exists and get its SHA and content
-        const fileUrl = `https://api.github.com/repos/${repo}/contents/${filePath}?ref=${newBranch}`;
-        let fileSha = null;
-        const fileResponse = await fetchJson(fileUrl, headers);
+  const content = await file.text().then((text) => btoa(text))
 
-        if (fileResponse.ok) {
-            const fileData = await fileResponse.json();
-            fileSha = fileData.sha;
+  // Step 1: Create the new branch
+  await createBranch(headers, newBranch)
 
-            const existingFileContent = atob(fileData.content.replace(/\n/g, ''));
-            if (existingFileContent === content) {
-                document.getElementById('result')!.innerHTML = `<p>No changes detected, pull request not created.</p>`;
-                return;
-            }
-        }
+  // Step 2: Check if the file already exists
+  const fileUrl = `https://api.github.com/repos/${repo}/contents/${filePath}?ref=${newBranch}`
 
-        // Step 3: Upload the file to the new branch
-        const uploadUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
-        const uploadData = {
-            message: `Add CSV file to ${namespace}`,
-            content: content,
-            branch: newBranch,
-            sha: fileSha
-        };
-        const uploadResponse = await fetchJson(uploadUrl, headers, 'PUT', JSON.stringify(uploadData));
+  const fileResponse = await fetch(fileUrl, {
+    headers
+  })
 
-        // Step 4: Create a pull request
-        const prUrl = `https://api.github.com/repos/${repo}/pulls`;
-        const prData = {
-            title: `Add CSV file to ${namespace}`,
-            head: newBranch,
-            base: baseBranch,
-            body: `This PR adds a CSV file to the ${namespace} namespace.`
-        };
-        const prResponse = await fetchJson(prUrl, headers, 'POST', JSON.stringify(prData));
+  // We expect it to be a 404 when uploading a new file but other error codes should be thrown
+  if (!fileResponse.ok && fileResponse.status !== 404) {
+    throw new Error(`Failed to get file: ${fileResponse.status} ${fileResponse.statusText}`)
+  }
 
-        const prResult = await prResponse.json();
-        document.getElementById('result')!.innerHTML = `<p>Pull Request created: <a href="${prResult.html_url}" target="_blank">${prResult.html_url}</a></p>`;
-    } catch (error) {
-        document.getElementById('result')!.innerHTML = `<p>${error.message}</p>`;
+  // If the file already exists, throw an error if the content is also the same
+  const fileData = await fileResponse.json()
+  if (fileResponse.status !== 404) {
+    const existingFileContent = atob(fileData.content.replace(/\n/g, ''))
+    if (existingFileContent === content) {
+      throw new Error('No changes detected; skipping pull request.')
     }
-};
+  }
 
+  // Step 3: Upload the file to the new branch
+  const uploadUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`
+  const uploadData = {
+    message: `Add CSV file to ${namespace}`,
+    content: content,
+    branch: newBranch,
+    sha: fileData.sha
+  }
+  const uploadResponse = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(uploadData)
+  })
+
+  if (!uploadResponse.ok) {
+    throw new Error(`Failed to upload file: ${uploadResponse.status} ${uploadResponse.statusText}`)
+  }
+
+  // Step 4: Create a pull request
+  const prUrl = `https://api.github.com/repos/${repo}/pulls`
+  const prData = {
+    title: `Add CSV file to ${namespace}`,
+    head: newBranch,
+    base: baseBranch,
+    body: `This PR adds a CSV file to the ${namespace} namespace.`
+  }
+  const prResponse = await fetch(prUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(prData)
+  }).then((res) => res.json())
+
+  return prResponse
+}
