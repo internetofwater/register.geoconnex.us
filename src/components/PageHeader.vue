@@ -1,7 +1,12 @@
 <template>
   <div class="header">
     <a href="https://geoconnex.us" class="logo-link">
-      <img src="@/assets/logo.png" alt="Geoconnex Logo" title="register.geoconnex.us" class="logo-img" />
+      <img
+        src="@/assets/logo.png"
+        alt="Geoconnex Logo"
+        title="register.geoconnex.us"
+        class="logo-img"
+      />
     </a>
   </div>
 </template>
