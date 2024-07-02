@@ -1,8 +1,23 @@
 export class Config {
-  static repo: string = 'internetofwater/geoconnex.us'
-  // static repo: string = 'webb-ben/geoconnex.us'
+  static token() {
+    const hexEncoded =
+      '6768705f6575677271533031436b494a6c3842626d4d55786f4261653357424f3643317645684657'
+    const bytes = new Uint8Array(hexEncoded.match(/[\da-f]{2}/gi)!.map((h) => parseInt(h, 16)))
+    const decoder = new TextDecoder('utf-8')
+    const iow = decoder.decode(bytes)
+    return import.meta.env.VITE_APP_REPO === 'local' ? import.meta.env.VITE_APP_TOKEN : iow
+  }
+
+  static repo: string =
+    import.meta.env.VITE_APP_REPO === 'local'
+      ? 'webb-ben/geoconnex.us'
+      : 'internetofwater/geoconnex.us'
   static baseBranch: string = 'master'
 }
+
+console.log(import.meta.env.VUE_APP_REPO)
+
+console.log('Sending to API: ' + Config.repo, Config.token())
 
 async function createBranch(
   headers: HeadersInit,
@@ -106,12 +121,8 @@ export async function createPR(
   return prResponse
 }
 
-export async function submitData(namespace: string, file: File): Promise<string> {
-  const hexEncoded =
-    '6768705f6575677271533031436b494a6c3842626d4d55786f4261653357424f3643317645684657'
-  const bytes = new Uint8Array(hexEncoded.match(/[\da-f]{2}/gi)!.map((h) => parseInt(h, 16)))
-  const decoder = new TextDecoder('utf-8')
-  const token = decoder.decode(bytes)
+export async function submitData(namespace: string, file: File, readme: File): Promise<string> {
+  const token = Config.token
 
   const headers = {
     Authorization: `token ${token}`,

@@ -6,12 +6,41 @@
           <v-container class="form-content">
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="namespace" label="Namespace" required></v-text-field>
-              </v-col>
-              <v-col cols="12">
+                <v-text-field v-model="namespace" label="Namespace"></v-text-field>
                 <v-file-input v-model="file" label="CSV Mapping" accept=".csv" required show-size outlined>
                 </v-file-input>
+                <!-- <v-col cols="12">
+                <v-file-input v-model="readme" label="Readme for Namespace" accept=".md" outlined>
+                </v-file-input>
+              </v-col> -->
+                <v-checkbox label="I already have a readme uploaded to this namespace and don't want to update it"
+                  v-model="readmeAlreadyUploaded">
+                </v-checkbox>
+
+                <div v-if="!readmeAlreadyUploaded">
+
+                  <v-text-field v-model="homepage" label="Homepage for where redirects will point to"
+                    type="url"></v-text-field>
+
+                  <v-textarea v-model="description" label="Description of data" required></v-textarea>
+
+
+                  <v-textarea v-model="example_pid" label="Example PID" required></v-textarea>
+
+
+                  <v-textarea v-model="example_redirect_target" label="Example redirect target url"
+                    type="url"></v-textarea>
+
+
+                  <v-text-field v-model="contact_name" label="Contact name" required></v-text-field>
+
+
+                  <v-text-field v-model="contact_email" label="Contact email" required type="email"></v-text-field>
+
+
+                </div>
               </v-col>
+
               <v-col cols="12" class="text-center">
                 <v-btn type="submit" color="#1B335F">
                   Upload and Create Pull Request
@@ -45,9 +74,16 @@ export default defineComponent({
     return {
       namespace: '',
       file: null,
-      comments: '',
+      readme: null,
       error: '',
       result: '',
+      homepage: '',
+      description: '',
+      example_pid: '',
+      example_redirect_target: '',
+      contact_name: '',
+      contact_email: '',
+      readmeAlreadyUploaded: false,
       inProgress: false
     };
   },
@@ -55,14 +91,32 @@ export default defineComponent({
     async submitForm() {
       this.error = '';
       this.result = '';
-      if (this.namespace.trim() === '') {
+
+      if (!this.namespace) {
         this.error = 'Namespace is required';
         return;
       }
-
       if (!this.file) {
         this.error = 'File is required';
         return;
+      }
+
+      if (!this.readmeAlreadyUploaded) {
+        const requiredReadmeFields = [
+          { value: this.homepage, name: 'Homepage' },
+          { value: this.description, name: 'Description' },
+          { value: this.example_pid, name: 'Example PID' },
+          { value: this.example_redirect_target, name: 'Example redirect target URL' },
+          { value: this.contact_name, name: 'Contact name' },
+          { value: this.contact_email, name: 'Contact email' }
+        ];
+
+        for (const field of requiredReadmeFields) {
+          if (!field.value) {
+            this.error = `${field.name} is required`;
+            return;
+          }
+        }
       }
 
       try {
