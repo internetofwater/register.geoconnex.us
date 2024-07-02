@@ -15,3 +15,4 @@ jobs:
           username: ${{ github.repository_owner }}
           reponame: 'register.geoconnex.us'
           token: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
+          cname: register.geoconnex.us
