@@ -9,86 +9,56 @@
                 <v-text-field v-model="namespace" label="Namespace" required></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-file-input
-                  v-model="file"
-                  label="CSV Mapping"
-                  accept=".csv"
-                  required
-                  show-size
-                  outlined
-                >
+                <v-file-input v-model="file" label="CSV Mapping" accept=".csv" required show-size outlined>
                 </v-file-input>
                 <!-- <v-col cols="12">
                 <v-file-input v-model="readme" label="Readme for Namespace" accept=".md" outlined>
-                </v-file-input>
+                </v-file-input> 
               </v-col> -->
-                <v-checkbox
-                  label="I already have a readme uploaded to this namespace and don't want to update it"
-                  v-model="readmeAlreadyUploaded"
-                >
+                <v-checkbox label="I already have a readme file uploaded to my namespace and don't wish to update it"
+                  v-model="readmeAlreadyUploaded">
                 </v-checkbox>
 
                 <div v-if="!readmeAlreadyUploaded">
-                  <v-text-field
-                    v-model="homepage"
-                    label="Homepage for where redirects will point to"
-                    type="url"
-                  ></v-text-field>
+                  <div>
+                    <v-card-text class="text-center">
+                      <v-row class="d-flex justify-center">
+                        <h2>Metadata for your README</h2>
+                        <!-- <v-icon icon="mdi-information" class="ml-3" color="#1B335F" :onclick="toggleHelp"></v-icon> -->
+                      </v-row>
+                    </v-card-text>
+                  </div>
+                  <v-text-field v-model="homepage" label="Homepage for where redirects will point to"
+                    type="url"></v-text-field>
 
-                  <v-textarea
-                    v-model="description"
-                    label="Description of data"
-                    required
-                  ></v-textarea>
+                  <v-textarea v-model="description" label="Description of data" required></v-textarea>
 
-                  <v-textarea v-model="example_pid" label="Example PID" required></v-textarea>
+                  <v-text-field v-model="example_pid" label="Example PID" required></v-text-field>
 
-                  <v-textarea
-                    v-model="example_redirect_target"
-                    label="Example redirect target url"
-                    type="url"
-                  ></v-textarea>
+                  <v-text-field v-model="example_redirect_target" label="Example redirect target url"
+                    type="url"></v-text-field>
 
                   <v-text-field v-model="contact_name" label="Contact name" required></v-text-field>
 
-                  <v-text-field
-                    v-model="contact_email"
-                    label="Contact email"
-                    required
-                    type="email"
-                  ></v-text-field>
+                  <v-text-field v-model="contact_email" label="Contact email" required type="email"></v-text-field>
                 </div>
               </v-col>
 
               <v-col cols="12" class="text-center">
                 <v-btn type="submit" color="#1B335F"> Upload and Create Pull Request </v-btn>
                 <div class="justify-center py-5">
-                  <v-progress-circular
-                    v-if="inProgress"
-                    indeterminate
-                    color="primary"
-                  ></v-progress-circular>
+                  <v-progress-circular v-if="inProgress" indeterminate color="primary"></v-progress-circular>
                 </div>
               </v-col>
             </v-row>
           </v-container>
           <v-fade-transition>
-            <v-alert
-              color="error"
-              icon="$error"
-              title="Error submitting PR"
-              :text="error"
-              v-if="error && !inProgress"
-            ></v-alert>
+            <v-alert color="error" icon="$error" title="Error submitting PR" :text="error"
+              v-if="error && !inProgress"></v-alert>
           </v-fade-transition>
           <v-fade-transition>
-            <v-alert
-              color="success"
-              icon="$success"
-              title="PR Submitted"
-              :text="result"
-              v-if="!error && result !== '' && !inProgress"
-            ></v-alert>
+            <v-alert color="success" icon="$success" title="PR Submitted" :text="result"
+              v-if="!error && result && !inProgress"></v-alert>
           </v-fade-transition>
         </v-form>
       </v-col>
@@ -98,14 +68,15 @@
 
 <script lang="ts">
 import { submitData } from '@/lib/upload'
+import { generateReadMe, type MarkdownSection } from '@/lib/helpers'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
   data() {
     return {
       namespace: '',
-      file: null,
-      readme: null,
+      file: null as File | null,
+      readme: null as File | null,
       error: '',
       result: '',
       homepage: '',
@@ -120,8 +91,10 @@ export default defineComponent({
   },
   methods: {
     async submitForm() {
+      // Reset form state before submitting
       this.error = ''
       this.result = ''
+      this.inProgress = false
 
       if (!this.namespace) {
         this.error = 'Namespace is required'
@@ -132,27 +105,31 @@ export default defineComponent({
         return
       }
 
+
       if (!this.readmeAlreadyUploaded) {
-        const requiredReadmeFields = [
-          { value: this.homepage, name: 'Homepage' },
-          { value: this.description, name: 'Description' },
-          { value: this.example_pid, name: 'Example PID' },
-          { value: this.example_redirect_target, name: 'Example redirect target URL' },
-          { value: this.contact_name, name: 'Contact name' },
-          { value: this.contact_email, name: 'Contact email' }
+        const requiredReadmeFields: MarkdownSection[] = [
+          { body: this.homepage, sectionName: 'Homepage' },
+          { body: this.description, sectionName: 'Description' },
+          { body: this.example_pid, sectionName: 'Example PID' },
+          { body: this.example_redirect_target, sectionName: 'Example redirect target URL' },
+          { body: this.contact_name, sectionName: 'Contact name' },
+          { body: this.contact_email, sectionName: 'Contact email' }
         ]
 
         for (const field of requiredReadmeFields) {
-          if (!field.value) {
-            this.error = `${field.name} is required`
+          if (!field.body) {
+            this.error = `${field.sectionName} is required`
             return
           }
         }
+
+        const generatedReadme = generateReadMe(this.namespace, requiredReadmeFields)
+        this.readme = new File([generatedReadme], 'README.md', { type: 'text/plain' })
       }
 
       try {
         this.inProgress = true
-        const result = await submitData(this.namespace, this.file)
+        const result = await submitData(this.namespace, this.file, this.readme || undefined)
         this.result = result
       } catch (error) {
         this.error = error instanceof Error ? error.message : String(error)
@@ -173,5 +150,9 @@ export default defineComponent({
   width: 80%;
   max-width: 600px;
   margin: 0 auto;
+}
+
+h2 {
+  color: #1B335F;
 }
 </style>

@@ -1,11 +1,13 @@
 export class Config {
-  static token() {
+  static token(): string {
     const hexEncoded =
       '6768705f6575677271533031436b494a6c3842626d4d55786f4261653357424f3643317645684657'
     const bytes = new Uint8Array(hexEncoded.match(/[\da-f]{2}/gi)!.map((h) => parseInt(h, 16)))
     const decoder = new TextDecoder('utf-8')
     const iow = decoder.decode(bytes)
-    return import.meta.env.VITE_APP_REPO === 'local' ? import.meta.env.VITE_APP_TOKEN : iow
+    return import.meta.env.VITE_APP_REPO === 'local'
+      ? (import.meta.env.VITE_APP_LOCAL_TOKEN as string)
+      : iow
   }
 
   static repo: string =
@@ -78,12 +80,12 @@ export async function uploadData(
   remoteFilePath: string,
   newBranch: string,
   content: string,
-  namespace: string,
+  commitMessage: string,
   sha: string
 ) {
   const uploadUrl = `https://api.github.com/repos/${repo}/contents/${remoteFilePath}`
   const uploadData = {
-    message: `Add CSV file to ${namespace}`,
+    message: commitMessage,
     content: content,
     branch: newBranch,
     sha: sha
@@ -95,7 +97,11 @@ export async function uploadData(
   })
 
   if (!uploadResponse.ok) {
-    throw new Error(`Failed to upload file: ${uploadResponse.status} ${uploadResponse.statusText}`)
+    if (uploadResponse.status === 422) {
+      throw new Error('Error with the upload sha')
+    } else {
+      throw new Error(`Failed to upload file; HTTP error: ${uploadResponse.status}`)
+    }
   }
 }
 
@@ -121,8 +127,8 @@ export async function createPR(
   return prResponse
 }
 
-export async function submitData(namespace: string, file: File, readme: File): Promise<string> {
-  const token = Config.token
+export async function submitData(namespace: string, file: File, readme?: File): Promise<string> {
+  const token = Config.token()
 
   const headers = {
     Authorization: `token ${token}`,
@@ -141,7 +147,36 @@ export async function submitData(namespace: string, file: File, readme: File): P
 
   await createBranch(headers, repo, baseBranch, newBranch)
 
-  await uploadData(headers, repo, remoteFilePath, newBranch, b64content, namespace, validatedSha)
+  await uploadData(
+    headers,
+    repo,
+    remoteFilePath,
+    newBranch,
+    b64content,
+    `Add CSV file to ${namespace}`,
+    validatedSha
+  )
+
+  if (readme) {
+    const readmeContent = await readme.text()
+    const readmeB64Content = btoa(readmeContent)
+    const readmeFilePath = `namespaces/${namespace}/README.md`
+    const validatedReadmeSha = await ensureContentIsNew(
+      repo,
+      baseBranch,
+      readmeFilePath,
+      readmeContent
+    )
+    await uploadData(
+      headers,
+      repo,
+      readmeFilePath,
+      newBranch,
+      readmeB64Content,
+      `Add README file to ${namespace}`,
+      validatedReadmeSha
+    )
+  }
 
   const result = await createPR(headers, repo, baseBranch, newBranch, namespace)
 
