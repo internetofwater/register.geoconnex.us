@@ -6,8 +6,20 @@
           <v-container class="form-content">
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="namespace" label="Namespace"></v-text-field>
-                <v-file-input v-model="file" label="CSV Mapping" accept=".csv" required show-size outlined>
+                
+                
+                <v-text-field v-model="namespace" label="Namespace" required></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-file-input
+                  v-model="file"
+                  label="CSV Mapping"
+                  accept=".csv"
+                  required
+                  show-size
+                  outlined
+                >
+
                 </v-file-input>
                 <!-- <v-col cols="12">
                 <v-file-input v-model="readme" label="Readme for Namespace" accept=".md" outlined>
@@ -42,22 +54,34 @@
               </v-col>
 
               <v-col cols="12" class="text-center">
-                <v-btn type="submit" color="#1B335F">
-                  Upload and Create Pull Request
-                </v-btn>
+                <v-btn type="submit" color="#1B335F"> Upload and Create Pull Request </v-btn>
                 <div class="justify-center py-5">
-                  <v-progress-circular v-if="inProgress" indeterminate color="primary"></v-progress-circular>
+                  <v-progress-circular
+                    v-if="inProgress"
+                    indeterminate
+                    color="primary"
+                  ></v-progress-circular>
                 </div>
               </v-col>
             </v-row>
           </v-container>
           <v-fade-transition>
-            <v-alert color="error" icon="$error" title="Error submitting PR" :text="error"
-              v-if="error && !inProgress"></v-alert>
+            <v-alert
+              color="error"
+              icon="$error"
+              title="Error submitting PR"
+              :text="error"
+              v-if="error && !inProgress"
+            ></v-alert>
           </v-fade-transition>
           <v-fade-transition>
-            <v-alert color="success" icon="$success" title="PR Submitted" :text="result"
-              v-if="!error && result !== '' && !inProgress"></v-alert>
+            <v-alert
+              color="success"
+              icon="$success"
+              title="PR Submitted"
+              :text="result"
+              v-if="!error && result !== '' && !inProgress"
+            ></v-alert>
           </v-fade-transition>
         </v-form>
       </v-col>
@@ -66,8 +90,8 @@
 </template>
 
 <script lang="ts">
-import { submitData } from '@/lib/upload';
-import { defineComponent } from 'vue';
+import { submitData } from '@/lib/upload'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   data() {
@@ -85,7 +109,7 @@ export default defineComponent({
       contact_email: '',
       readmeAlreadyUploaded: false,
       inProgress: false
-    };
+    }
   },
   methods: {
     async submitForm() {
@@ -97,8 +121,8 @@ export default defineComponent({
         return;
       }
       if (!this.file) {
-        this.error = 'File is required';
-        return;
+        this.error = 'File is required'
+        return
       }
 
       if (!this.readmeAlreadyUploaded) {
@@ -120,17 +144,15 @@ export default defineComponent({
       }
 
       try {
-        this.inProgress = true;
-        const result = await submitData(this.namespace, this.file);
-        this.result = result;
-      }
-      catch (error) {
-        this.error = error instanceof Error ? error.message : String(error);
-        this.result = '';
+        this.inProgress = true
+        const result = await submitData(this.namespace, this.file)
+        this.result = result
+      } catch (error) {
+        this.error = error instanceof Error ? error.message : String(error)
+        this.result = ''
       }
 
-      this.inProgress = false;
-
+      this.inProgress = false
     }
   }
 })
@@ -138,7 +160,6 @@ export default defineComponent({
 
 <style scoped>
 .form-container {
-
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 80px rgba(0, 0, 0, 0.1);

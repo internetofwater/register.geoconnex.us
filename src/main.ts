@@ -10,7 +10,7 @@ import App from './App.vue'
 
 const vuetify = createVuetify({
   components,
-  directives,
+  directives
 })
 
 const app = createApp(App)
