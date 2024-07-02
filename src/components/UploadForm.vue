@@ -6,8 +6,6 @@
           <v-container class="form-content">
             <v-row>
               <v-col cols="12">
-                
-                
                 <v-text-field v-model="namespace" label="Namespace" required></v-text-field>
               </v-col>
               <v-col cols="12">
@@ -19,37 +17,46 @@
                   show-size
                   outlined
                 >
-
                 </v-file-input>
                 <!-- <v-col cols="12">
                 <v-file-input v-model="readme" label="Readme for Namespace" accept=".md" outlined>
                 </v-file-input>
               </v-col> -->
-                <v-checkbox label="I already have a readme uploaded to this namespace and don't want to update it"
-                  v-model="readmeAlreadyUploaded">
+                <v-checkbox
+                  label="I already have a readme uploaded to this namespace and don't want to update it"
+                  v-model="readmeAlreadyUploaded"
+                >
                 </v-checkbox>
 
                 <div v-if="!readmeAlreadyUploaded">
+                  <v-text-field
+                    v-model="homepage"
+                    label="Homepage for where redirects will point to"
+                    type="url"
+                  ></v-text-field>
 
-                  <v-text-field v-model="homepage" label="Homepage for where redirects will point to"
-                    type="url"></v-text-field>
-
-                  <v-textarea v-model="description" label="Description of data" required></v-textarea>
-
+                  <v-textarea
+                    v-model="description"
+                    label="Description of data"
+                    required
+                  ></v-textarea>
 
                   <v-textarea v-model="example_pid" label="Example PID" required></v-textarea>
 
-
-                  <v-textarea v-model="example_redirect_target" label="Example redirect target url"
-                    type="url"></v-textarea>
-
+                  <v-textarea
+                    v-model="example_redirect_target"
+                    label="Example redirect target url"
+                    type="url"
+                  ></v-textarea>
 
                   <v-text-field v-model="contact_name" label="Contact name" required></v-text-field>
 
-
-                  <v-text-field v-model="contact_email" label="Contact email" required type="email"></v-text-field>
-
-
+                  <v-text-field
+                    v-model="contact_email"
+                    label="Contact email"
+                    required
+                    type="email"
+                  ></v-text-field>
                 </div>
               </v-col>
 
@@ -113,12 +120,12 @@ export default defineComponent({
   },
   methods: {
     async submitForm() {
-      this.error = '';
-      this.result = '';
+      this.error = ''
+      this.result = ''
 
       if (!this.namespace) {
-        this.error = 'Namespace is required';
-        return;
+        this.error = 'Namespace is required'
+        return
       }
       if (!this.file) {
         this.error = 'File is required'
@@ -133,12 +140,12 @@ export default defineComponent({
           { value: this.example_redirect_target, name: 'Example redirect target URL' },
           { value: this.contact_name, name: 'Contact name' },
           { value: this.contact_email, name: 'Contact email' }
-        ];
+        ]
 
         for (const field of requiredReadmeFields) {
           if (!field.value) {
-            this.error = `${field.name} is required`;
-            return;
+            this.error = `${field.name} is required`
+            return
           }
         }
       }
