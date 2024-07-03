@@ -1,6 +1,6 @@
 <template>
   <v-expansion-panels class="contribution-button" @click="toggleMarkdown">
-    <v-expansion-panel class="expansion-panel" title="Contribution Documentation">
+    <v-expansion-panel class="expansion-panel text-center" title="Detailed contribution documentation">
       <v-card v-if="showing">
         <v-card-text class="markdown-card-text pa-10">
           <div id="markdownContainer">
@@ -64,6 +64,5 @@ export default defineComponent({
 
 .markdown-card-text {
   padding: 16px;
-  /* Adjust padding as needed */
 }
 </style>
