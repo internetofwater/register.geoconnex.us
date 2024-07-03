@@ -5,34 +5,58 @@
         <v-form id="uploadForm" @submit.prevent="submitForm" class="form-container">
           <v-container class="form-content">
             <v-row>
-              <i class="text-center pa-4">Submit a csv file that will register persistent URL-formatted identifiers for
-                your organization's monitoring locations within a "namespace" (short name for your organization). </i>
-              <i class="text-center pa-4">Ensure your identifiers are well-documented and all info is up-to-date to
-                so that Geoconnex administrators can follow up with you if there are any issues.</i>
+              <i class="text-center pa-4"
+                >Submit a csv file that will register persistent URL-formatted identifiers for your
+                organization's monitoring locations within a "namespace" (short name for your
+                organization).
+              </i>
+              <i class="text-center pa-4"
+                >Ensure your identifiers are well-documented and all info is up-to-date to so that
+                Geoconnex administrators can follow up with you if there are any issues.</i
+              >
               <v-col cols="12">
-                <v-text-field v-model="namespace" label="Namespace" hint="Example: usgs" required></v-text-field>
+                <v-text-field
+                  v-model="namespace"
+                  label="Namespace"
+                  hint="Example: usgs"
+                  required
+                ></v-text-field>
                 <v-expansion-panels class="contribution-button mb-5">
                   <v-expansion-panel title="CSV templates and formatting info" bg-color="#f4f4f9">
                     <v-expansion-panel-text class="expansion-panel text-1b335f">
                       <v-card-text class="markdown-card-text text-center pa-0 ma-0">
-                        The 4 columns in your CSV should be: <br>
+                        The 4 columns in your CSV should be: <br />
                         <code>id target creator description</code>
-                        <br>
-                        <v-btn density="compact" class="flex ma-2" target="_blank"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/SELFIE/SELFIE_ids.csv">View
-                          a 1:1
-                          example</v-btn>
-                        <v-btn density="compact"
+                        <br />
+                        <v-btn
+                          density="compact"
+                          class="flex ma-2"
+                          target="_blank"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/SELFIE/SELFIE_ids.csv"
+                          >View a 1:1 example</v-btn
+                        >
+                        <v-btn
+                          density="compact"
                           href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv"
-                          target="_blank">View a 1:N example</v-btn>
-                        <br>
-                        For more detailed info, see the contribution documentation at the bottom of the page
+                          target="_blank"
+                          >View a 1:N example</v-btn
+                        >
+                        <br />
+                        For more detailed info, see the contribution documentation at the bottom of
+                        the page
                       </v-card-text>
                     </v-expansion-panel-text>
                   </v-expansion-panel>
                 </v-expansion-panels>
 
-                <v-file-input v-model="file" label="CSV Mapping" accept=".csv" required show-size outlined>
+                <v-file-input
+                  v-model="file"
+                  label="CSV Mapping"
+                  accept=".csv"
+                  required
+                  show-size
+                  outlined
+                >
                 </v-file-input>
                 <!-- <v-col cols="12">
                 <v-file-input v-model="readme" label="Readme for Namespace" accept=".md" outlined>
@@ -40,7 +64,8 @@
               </v-col> -->
                 <v-checkbox
                   label="I already have a readme file uploaded to my namespace and do not wish to update my contribution info"
-                  v-model="readmeAlreadyUploaded">
+                  v-model="readmeAlreadyUploaded"
+                >
                 </v-checkbox>
 
                 <div v-if="!readmeAlreadyUploaded">
@@ -52,44 +77,91 @@
                       </v-row>
                     </v-card-text>
                   </div>
-                  <v-text-field v-model="homepage" label="Homepage for where redirects will point to" type="url"
-                    required hint="Example: https://waterdata.usgs.gov" persistent-hint class="pb-4"></v-text-field>
+                  <v-text-field
+                    v-model="homepage"
+                    label="Homepage for where redirects will point to"
+                    type="url"
+                    required
+                    hint="Example: https://waterdata.usgs.gov"
+                    persistent-hint
+                    class="pb-4"
+                  ></v-text-field>
 
-                  <v-textarea v-model="description" label="Description of data" required
-                    hint="Example: All monitoring locations used by the USGS Waterdata system" persistent-hint
-                    class="pb-4"></v-textarea>
+                  <v-textarea
+                    v-model="description"
+                    label="Description of data"
+                    required
+                    hint="Example: All monitoring locations used by the USGS Waterdata system"
+                    persistent-hint
+                    class="pb-4"
+                  ></v-textarea>
 
-                  <v-text-field v-model="example_pid" label="Example PID" required
-                    hint="Example: https://geoconnex.us/usgs/monitoring-location/08383500" persistent-hint
-                    class="pb-4"></v-text-field>
+                  <v-text-field
+                    v-model="example_pid"
+                    label="Example PID"
+                    required
+                    hint="Example: https://geoconnex.us/usgs/monitoring-location/08383500"
+                    persistent-hint
+                    class="pb-4"
+                  ></v-text-field>
 
-                  <v-text-field v-model="example_redirect_target" label="Example redirect target url" type="url"
-                    hint="Example: https://waterdata.usgs.gov/monitoring-location/08383500" persistent-hint
-                    class="pb-4"></v-text-field>
+                  <v-text-field
+                    v-model="example_redirect_target"
+                    label="Example redirect target url"
+                    type="url"
+                    hint="Example: https://waterdata.usgs.gov/monitoring-location/08383500"
+                    persistent-hint
+                    class="pb-4"
+                  ></v-text-field>
 
-                  <v-text-field v-model="contact_name" label="Contact name" hint="Example: John Smith" required
-                    class="pb-4"></v-text-field>
+                  <v-text-field
+                    v-model="contact_name"
+                    label="Contact name"
+                    hint="Example: John Smith"
+                    required
+                    class="pb-4"
+                  ></v-text-field>
 
-                  <v-text-field v-model="contact_email" label="Contact email" append-inner-icon="mdi-email" required
-                    type="email" hint="Example: user@usgs.gov"></v-text-field>
+                  <v-text-field
+                    v-model="contact_email"
+                    label="Contact email"
+                    append-inner-icon="mdi-email"
+                    required
+                    type="email"
+                    hint="Example: user@usgs.gov"
+                  ></v-text-field>
                 </div>
               </v-col>
 
               <v-col cols="12" class="text-center">
                 <v-btn type="submit" color="#1B335F"> Upload and Create Pull Request </v-btn>
                 <div class="justify-center py-5">
-                  <v-progress-circular v-if="inProgress" indeterminate color="primary"></v-progress-circular>
+                  <v-progress-circular
+                    v-if="inProgress"
+                    indeterminate
+                    color="primary"
+                  ></v-progress-circular>
                 </div>
               </v-col>
             </v-row>
           </v-container>
           <v-fade-transition>
-            <v-alert color="error" icon="$error" title="Error submitting PR" :text="error"
-              v-if="error && !inProgress"></v-alert>
+            <v-alert
+              color="error"
+              icon="$error"
+              title="Error submitting PR"
+              :text="error"
+              v-if="error && !inProgress"
+            ></v-alert>
           </v-fade-transition>
           <v-fade-transition>
-            <v-alert color="success" icon="$success" title="PR Submitted" :text="result"
-              v-if="!error && result && !inProgress"></v-alert>
+            <v-alert
+              color="success"
+              icon="$success"
+              title="PR Submitted"
+              :text="result"
+              v-if="!error && result && !inProgress"
+            ></v-alert>
           </v-fade-transition>
         </v-form>
       </v-col>
