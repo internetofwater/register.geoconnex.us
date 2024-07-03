@@ -7,7 +7,7 @@ import '@mdi/font/css/materialdesignicons.css'
 
 <template>
   <PageHeader />
-  <h1>Upload to Geoconnex</h1>
+  <h1>Register Persistant Identifiers for Geoconnex</h1>
   <UploadForm />
   <ContributionInfo />
 </template>
