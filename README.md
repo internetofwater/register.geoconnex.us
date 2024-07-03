@@ -1,6 +1,6 @@
 # register.geoconnex.us
 
-The Geoconnex Registration Service makes it easy to contribute PIDs to geoconnex.us without a GitHub Account.
+The Geoconnex registration service makes it easy to contribute PIDs to geoconnex.us without a GitHub Account.
 
 ## Project Setup
 
