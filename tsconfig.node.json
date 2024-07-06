@@ -13,6 +13,7 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "noImplicitThis": true,
     "noImplicitAny": true,
+    "strictNullChecks": true,
     "strict": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",

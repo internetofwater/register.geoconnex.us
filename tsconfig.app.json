@@ -8,9 +8,14 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strict": true,
+    "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
   }
+  // Can't find a way to get this working with vuetify
+  // "vueCompilerOptions": {
+  //   "strictTemplates": true,
+  // }
 }
