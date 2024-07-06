@@ -14,8 +14,4 @@
       "@/*": ["./src/*"]
     }
   }
-  // Can't find a way to get this working with vuetify
-  // "vueCompilerOptions": {
-  //   "strictTemplates": true,
-  // }
 }
