@@ -17,9 +17,7 @@ export class Config {
   static baseBranch: string = 'master'
 }
 
-console.log(import.meta.env.VUE_APP_REPO)
-
-console.log('Sending to API: ' + Config.repo, Config.token())
+console.log('Sending to API: ' + Config.repo)
 
 async function createBranch(
   headers: HeadersInit,
