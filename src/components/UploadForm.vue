@@ -32,13 +32,13 @@
                           density="compact"
                           class="flex ma-2"
                           target="_blank"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/SELFIE/SELFIE_ids.csv"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv"
                           >View a 1:1 example</v-btn
                         >
                         <v-btn
                           density="compact"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv"
                           target="_blank"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/SELFIE/SELFIE_ids.csv"
                           >View a 1:N example</v-btn
                         >
                         <br />
@@ -170,11 +170,16 @@
 </template>
 
 <script lang="ts">
+
+import { ref } from 'vue';
+
 import { submitData } from '@/lib/upload'
 import { generateReadMe, type MarkdownSection } from '@/lib/helpers'
 import { defineComponent } from 'vue'
+import { validGeoconnexCSV } from '@/lib/helpers';
 
 export default defineComponent({
+
   data() {
     return {
       namespace: '',
@@ -205,6 +210,13 @@ export default defineComponent({
       }
       if (!this.file) {
         this.error = 'File is required'
+        return
+      }
+
+      const [isValid, errMsg] = validGeoconnexCSV(this.file)
+      
+      if (!isValid) {
+        this.error = errMsg
         return
       }
 
