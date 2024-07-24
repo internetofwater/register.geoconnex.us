@@ -27,6 +27,11 @@ async function createBranch(
 ) {
   const baseBranchUrl = `https://api.github.com/repos/${repo}/git/refs/heads/${baseBranch}`
   const baseBranchData = await fetch(baseBranchUrl, { headers }).then((res) => res.json())
+
+  if (baseBranchData.status === "401") {
+    throw new Error('Error creating a new branch for the GitHub PR. Reason: ' + baseBranchData.message)
+  }
+  console.log(baseBranchData)
   const newBranchUrl = `https://api.github.com/repos/${repo}/git/refs`
   const newBranchData = {
     ref: `refs/heads/${branchName}`,

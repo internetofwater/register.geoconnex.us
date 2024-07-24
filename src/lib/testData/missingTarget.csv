@@ -1,0 +1,2 @@
+id,creator,description
+https://geoconnex.us//usgs/monitoring-location/([a-zA-Z0-9_]+).*$, iow@iow.com, USGS Monitoring Locations  

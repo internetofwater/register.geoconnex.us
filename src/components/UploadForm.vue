@@ -152,7 +152,8 @@
               title="Error submitting PR"
               :text="error"
               v-if="error && !inProgress"
-            ></v-alert>
+            >
+          </v-alert>
           </v-fade-transition>
           <v-fade-transition>
             <v-alert
@@ -170,16 +171,14 @@
 </template>
 
 <script lang="ts">
-
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 import { submitData } from '@/lib/upload'
 import { generateReadMe, type MarkdownSection } from '@/lib/helpers'
 import { defineComponent } from 'vue'
-import { validGeoconnexCSV } from '@/lib/helpers';
+import { validGeoconnexCSV } from '@/lib/helpers'
 
 export default defineComponent({
-
   data() {
     return {
       namespace: '',
@@ -213,8 +212,8 @@ export default defineComponent({
         return
       }
 
-      const [isValid, errMsg] = validGeoconnexCSV(this.file)
-      
+      const [isValid, errMsg] = await validGeoconnexCSV(this.file)
+
       if (!isValid) {
         this.error = errMsg
         return
