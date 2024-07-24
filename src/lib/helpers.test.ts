@@ -69,14 +69,14 @@ test('Missing ID', async () => {
 })
 
 test('ID not a URL', async () => {
-  const [valid, message] = await validGeoconnexCSV(getTestFile('idNotUrl.csv'))
+  const [valid, message] = await validGeoconnexCSV(getTestFile('idNotURL.csv'))
 
   expect(valid).toBe(false)
   expect(message).toBe(CSVError.ID_AS_URL)
 })
 
 test('Target not a URL', async () => {
-  const [valid, message] = await validGeoconnexCSV(getTestFile('targetNotUrl.csv'))
+  const [valid, message] = await validGeoconnexCSV(getTestFile('targetNotURL.csv'))
 
   expect(valid).toBe(false)
   expect(message).toBe(CSVError.TARGET_AS_URL)
