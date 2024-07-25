@@ -57,6 +57,7 @@ export default defineComponent({
 .contribution-button {
   margin: 0 auto;
   text-align: center;
+  width: 50%;
 }
 
 .expansion-panel {
