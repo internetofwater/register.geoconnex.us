@@ -55,7 +55,7 @@ export default defineComponent({
 
 <style scoped>
 .contribution-button {
-  margin: 0 16 auto;
+  margin: 0 auto;
   text-align: center;
   width: 50%;
 }

@@ -137,17 +137,6 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                   ></v-text-field>
                 </div>
               </v-col>
-
-              <v-col cols="12" class="text-center">
-                <v-btn type="submit" color="#00A087"> Submit </v-btn>
-                <div class="justify-center py-5">
-                  <v-progress-circular
-                    v-if="inProgress"
-                    indeterminate
-                    color="primary"
-                  ></v-progress-circular>
-                </div>
-              </v-col>
             </v-row>
           </v-container>
           <v-fade-transition>
@@ -170,7 +159,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
             ></v-alert>
           </v-fade-transition>
           <v-col cols="12" class="text-center" v-if="!hideSubmission">
-            <v-btn type="submit" color="#1B335F"> Upload and Create Pull Request </v-btn>
+            <v-btn type="submit" color="#00A087"> Submit </v-btn>
           </v-col>
           <v-col cols="12" class="text-center">
             <div class="justify-center" v-if="progress.running">
