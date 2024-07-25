@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import URLCheckSummary from '@/components/URLCheckSummary.vue'
+</script>
+
 <template>
   <v-container class="fill-height" fluid>
     <v-row justify="center">
@@ -32,13 +36,13 @@
                           density="compact"
                           class="flex ma-2"
                           target="_blank"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/SELFIE/SELFIE_ids.csv"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/hydrologic-unit.csv"
                           >View a 1:1 example</v-btn
                         >
                         <v-btn
                           density="compact"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv"
                           target="_blank"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/SELFIE/SELFIE_ids.csv"
                           >View a 1:N example</v-btn
                         >
                         <br />
@@ -56,6 +60,7 @@
                   required
                   show-size
                   outlined
+                  @change="checkValid"
                 >
                 </v-file-input>
                 <!-- <v-col cols="12">
@@ -132,27 +137,17 @@
                   ></v-text-field>
                 </div>
               </v-col>
-
-              <v-col cols="12" class="text-center">
-                <v-btn type="submit" color="#1B335F"> Upload and Create Pull Request </v-btn>
-                <div class="justify-center py-5">
-                  <v-progress-circular
-                    v-if="inProgress"
-                    indeterminate
-                    color="primary"
-                  ></v-progress-circular>
-                </div>
-              </v-col>
             </v-row>
           </v-container>
           <v-fade-transition>
             <v-alert
-              color="error"
-              icon="$error"
-              title="Error submitting PR"
-              :text="error"
-              v-if="error && !inProgress"
-            ></v-alert>
+              :color="error.level || 'error'"
+              :icon="`$${error.level || 'error'}`"
+              :title="error.type"
+              :text="error.text"
+              v-if="error.type && !progress.running"
+            >
+            </v-alert>
           </v-fade-transition>
           <v-fade-transition>
             <v-alert
@@ -160,9 +155,26 @@
               icon="$success"
               title="PR Submitted"
               :text="result"
-              v-if="!error && result && !inProgress"
+              v-if="error.type == null && result && !progress.running"
             ></v-alert>
           </v-fade-transition>
+          <v-col cols="12" class="text-center" v-if="!hideSubmission">
+            <v-btn type="submit" color="#1B335F"> Upload and Create Pull Request </v-btn>
+          </v-col>
+          <v-col cols="12" class="text-center">
+            <div class="justify-center" v-if="progress.running">
+              <v-progress-circular indeterminate color="primary"> </v-progress-circular>
+              <br />
+              <br />
+              <p>{{ progress.action }}</p>
+            </div>
+          </v-col>
+          <v-col cols="12" class="text-center">
+            <v-btn v-if="error.type === 'Issues Checking CSV'" @click="overrideError">
+              Ignore warning and override
+            </v-btn>
+            <URLCheckSummary :crawlErrors="crawlErrors" class="mt-4"></URLCheckSummary>
+          </v-col>
         </v-form>
       </v-col>
     </v-row>
@@ -171,8 +183,16 @@
 
 <script lang="ts">
 import { submitData } from '@/lib/upload'
-import { generateReadMe, type MarkdownSection } from '@/lib/helpers'
+import { generateReadMe } from '@/lib/helpers'
+import { type MarkdownSection, type ValidationReport } from '@/lib/types'
 import { defineComponent } from 'vue'
+import { validGeoconnexCSV } from '@/lib/helpers'
+
+interface FormError {
+  type: 'Issues Checking CSV' | 'Error Submitting PR' | 'Checked CSV without errors' | null
+  text: string
+  level?: 'error' | 'warning' | 'info'
+}
 
 export default defineComponent({
   data() {
@@ -180,7 +200,7 @@ export default defineComponent({
       namespace: '',
       file: null as File | null,
       readme: null as File | null,
-      error: '',
+      error: {} as FormError,
       result: '',
       homepage: '',
       description: '',
@@ -189,25 +209,68 @@ export default defineComponent({
       contact_name: '',
       contact_email: '',
       readmeAlreadyUploaded: false,
-      inProgress: false
+      progress: { running: false, action: '' },
+      crawlErrors: [] as ValidationReport['crawlErrors'],
+      hideSubmission: false
     }
   },
   methods: {
+    async checkValid() {
+      this.error = { type: null, text: '' }
+      this.crawlErrors = []
+
+      if (!this.file) {
+        return
+      }
+      this.hideSubmission = true
+
+      this.progress = {
+        running: true,
+        action: 'Validating your CSV data. This may take a minute...'
+      }
+      const { valid, errorSummary, crawlErrors } = await validGeoconnexCSV(this.file)
+
+      if (!valid) {
+        if (this.crawlErrors !== undefined) {
+          this.crawlErrors = crawlErrors as { url: string; error: string }[]
+          this.progress = { running: false, action: '' }
+          this.error = {
+            type: 'Issues Checking CSV',
+            text: errorSummary as string,
+            level: 'warning'
+          }
+          return
+        }
+      }
+      this.error = {
+        type: 'Checked CSV without errors',
+        text: 'Note: automated tests do not check regex URLs. Please validate any complex logic individually.',
+        level: 'info'
+      }
+      this.progress = { running: false, action: '' }
+      this.hideSubmission = false
+    },
+    overrideError() {
+      this.hideSubmission = false
+      this.error = { type: null, text: '' }
+      this.crawlErrors = []
+    },
     async submitForm() {
       // Reset form state before submitting
-      this.error = ''
+      this.error = { type: null, text: '' }
       this.result = ''
-      this.inProgress = false
+      this.progress = { running: false, action: '' }
 
       if (!this.namespace) {
-        this.error = 'Namespace is required'
+        this.error = { type: 'Error Submitting PR', text: 'Namespace is required' }
         return
       }
       if (!this.file) {
-        this.error = 'File is required'
+        this.error = { type: 'Error Submitting PR', text: 'File is required' }
         return
       }
 
+      // Make sure all markdown fields are filled
       if (!this.readmeAlreadyUploaded) {
         const requiredReadmeFields: MarkdownSection[] = [
           { body: this.homepage, sectionName: 'Homepage' },
@@ -220,7 +283,7 @@ export default defineComponent({
 
         for (const field of requiredReadmeFields) {
           if (!field.body) {
-            this.error = `${field.sectionName} is required`
+            this.error = { type: 'Error Submitting PR', text: `${field.sectionName} is required` }
             return
           }
         }
@@ -229,16 +292,20 @@ export default defineComponent({
         this.readme = new File([generatedReadme], 'README.md', { type: 'text/plain' })
       }
 
+      // submit PR to Geoconnex Github repo
       try {
-        this.inProgress = true
+        this.progress = { running: true, action: 'Uploading your data to the Geoconnex registry.' }
         const result = await submitData(this.namespace, this.file, this.readme || undefined)
         this.result = result
       } catch (error) {
-        this.error = error instanceof Error ? error.message : String(error)
+        this.error = {
+          type: 'Error Submitting PR',
+          text: error instanceof Error ? error.message : String(error)
+        }
         this.result = ''
       }
 
-      this.inProgress = false
+      this.progress = { running: false, action: '' }
     }
   }
 })
