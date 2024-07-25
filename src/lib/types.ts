@@ -19,6 +19,6 @@ export interface ValidationReport {
 }
 
 export interface MarkdownSection {
-    sectionName: string
-    body: string
-  }
+  sectionName: string
+  body: string
+}

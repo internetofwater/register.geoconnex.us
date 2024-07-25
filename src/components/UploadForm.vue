@@ -173,7 +173,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
             <v-btn v-if="error.type === 'Issues Checking CSV'" @click="overrideError">
               Ignore warning and override
             </v-btn>
-            <URLCheckSummary :crawlErrors="crawlErrors" class="mt-4"></URLCheckSummary >
+            <URLCheckSummary :crawlErrors="crawlErrors" class="mt-4"></URLCheckSummary>
           </v-col>
         </v-form>
       </v-col>
