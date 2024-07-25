@@ -1,4 +1,5 @@
 import Papa from 'papaparse'
+import { CSVError, type MarkdownSection, type ValidationReport } from './types'
 
 export async function fetchMarkdownContent(url: string): Promise<string> {
   const response = await fetch(url)
@@ -12,11 +13,6 @@ export async function fetchMarkdownContent(url: string): Promise<string> {
   return markdown
 }
 
-export interface MarkdownSection {
-  sectionName: string
-  body: string
-}
-
 export function generateReadMe(title: string, rawInput: MarkdownSection[]): string {
   let output = `# ${title}\n\n`
 
@@ -25,20 +21,6 @@ export function generateReadMe(title: string, rawInput: MarkdownSection[]): stri
   }
   return output
 }
-
-export enum CSVError {
-  PARSING = 'Your CSV appears to be improperly formatted. Please check the formatting and try again.',
-  EMPTY = 'Your CSV appears to be empty or missing data.',
-  CREATOR_AS_EMAIL = 'Inside your CSV, the creator column does not appear to use a valid email address',
-  MISSING_ID = 'You are missing the id column in your CSV',
-  MISSING_TARGET = 'You are missing the target column in your CSV',
-  MISSING_CREATOR = 'You are missing the creator column in your CSV',
-  MISSING_DESCRIPTION = 'You are missing the description column in your CSV',
-  TARGET_AS_URL = 'Inside your CSV, the target column is not using a valid URL',
-  ID_AS_URL = 'Inside your CSV, the id column is not using a valid URL'
-}
-
-type CSVResult = CSVError | 'Success'
 
 function isValidHttpUrl(string: string | URL) {
   let url
@@ -52,43 +34,60 @@ function isValidHttpUrl(string: string | URL) {
   return url.protocol === 'http:' || url.protocol === 'https:'
 }
 
-export async function validGeoconnexCSV(file: File): Promise<[boolean, CSVResult]> {
-  // Check if the user submitted CSV is valid. Just checks the first row for validity
-  // These checks are meant to be reasonable sanity checks, not fully exhaustive
-
-  // Papaparse usually has a callback based API. We need to wrap it in a promise
-  // to block and get the results by awaiting before we submit the form
-  function csvPromise(file: File): Promise<[boolean, Papa.ParseResult<unknown>]> {
-    return new Promise((resolve, reject) => {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: function (results) {
-          resolve([true, results])
-        },
-        error: function (error) {
-          reject([false, error])
+export async function targetsAreAlive(
+  targets: string[]
+): Promise<[boolean, { url: string; error: string }[]]> {
+  try {
+    // Generate an array of all promises for each target
+    const promises = targets.map(async (url) => {
+      try {
+        // If we don't get a response after 6 seconds, just assume the target is dead
+        const response = await fetch(url, {
+          signal: AbortSignal.timeout(15000),
+          redirect: 'follow'
+        })
+        if (response.ok) {
+          return { url, alive: true, error: '' }
+        } else {
+          return { url, alive: false, error: response.statusText as string }
         }
-      })
+      } catch (error) {
+        return { url, alive: false, error: error as string }
+      }
     })
+
+    // Wait for all promises to resolve
+    const results = await Promise.all(promises)
+
+    // Output only the targets which are not alive
+    const notAliveTargets = results.filter((result) => !result.alive)
+
+    // Drop the alive property, all these are not alive
+    const notAliveUrls = notAliveTargets.map((result) => {
+      return { url: result.url, error: result.error }
+    })
+
+    // All targets are alive
+    if (notAliveTargets.length === 0) {
+      return [true, []]
+    } else {
+      return [false, notAliveUrls]
+    }
+  } catch (error) {
+    console.error('Error while checking targets:', error)
+    return [false, []]
   }
+}
 
-  const [didSucceed, parseResult] = await csvPromise(file)
+function checkHeaderAndFirstRow(
+  dataOutput: Record<string, string>[]
+): [boolean, CSVError | 'Success'] {
+  // Run a series of sanity checks on the first row and header of the CSV
 
-  if (!didSucceed) {
-    return [false, CSVError.PARSING]
-  }
-
-  if (parseResult.data.length === 0) {
-    return [false, CSVError.EMPTY]
-  }
-
-  const firstRow = (parseResult.data as Record<string, string>[])[0]
-
-  const creator = firstRow['creator']
-  const target = firstRow['target']
-  const id = firstRow['id']
-  const description = firstRow['description']
+  const creator = dataOutput[0]['creator']
+  const target = dataOutput[0]['target']
+  const id = dataOutput[0]['id']
+  const description = dataOutput[0]['description']
 
   if (!id || id.length === 0) {
     return [false, CSVError.MISSING_ID]
@@ -119,4 +118,96 @@ export async function validGeoconnexCSV(file: File): Promise<[boolean, CSVResult
   }
 
   return [true, 'Success']
+}
+
+export async function validGeoconnexCSV(
+  file: File,
+  skipAliveCheck = false
+): Promise<ValidationReport> {
+  // Check if the user submitted CSV is valid. Just checks the first row for validity
+  // These checks are meant to be reasonable sanity checks, not fully exhaustive
+
+  // Papaparse usually has a callback based API. We need to wrap it in a promise
+  // to block and get the results by awaiting before we submit the form
+  function csvPromise(file: File): Promise<[boolean, Papa.ParseResult<unknown>]> {
+    return new Promise((resolve, reject) => {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          resolve([true, results])
+        },
+        error: function (error) {
+          reject([false, error])
+        }
+      })
+    })
+  }
+
+  const [didSucceed, parseResult] = await csvPromise(file)
+
+  if (!didSucceed) {
+    return {
+      valid: false,
+      errorSummary: CSVError.PARSING,
+      crawlErrors: []
+    }
+  }
+
+  if (parseResult.data.length === 0) {
+    return {
+      valid: false,
+      errorSummary: CSVError.EMPTY,
+      crawlErrors: []
+    }
+  }
+
+  const dataOutput = parseResult.data as Record<string, string>[]
+
+  // Before we do fetch queries on the targets, check to make sure the CSV is generally sane
+  const [isValid, error] = checkHeaderAndFirstRow(dataOutput)
+  if (!isValid) {
+    return {
+      valid: false,
+      errorSummary: error,
+      crawlErrors: []
+    }
+  }
+
+  const targets = []
+  for (let i = 0; i < dataOutput.length; i++) {
+    try {
+      const isRegex = dataOutput[i]['id'].startsWith('https://geoconnex.us/' + '/')
+      if (isRegex) {
+        continue
+      } else {
+        targets.push(dataOutput[i]['target'])
+      }
+    } catch (error) {
+      return {
+        valid: false,
+        errorSummary: `In your CSV, you specified a target URL which is not valid: ${dataOutput[i]['target']}`,
+        crawlErrors: []
+      }
+    }
+  }
+
+  if (!skipAliveCheck) {
+    const [isAlive, crawlErrors] = await targetsAreAlive(targets)
+
+    if (!isAlive) {
+      const response = `You listed target URLs which did not return a valid HTTP response. This could be a sign on a target URL is down. However, this could be a false positive. Some servers may block these requests.`
+      return {
+        valid: false,
+        errorSummary: response,
+        crawlErrors: crawlErrors
+      }
+    }
+  }
+
+  return {
+    valid: true,
+    errorSummary: 'Success',
+    crawlErrors: []
+  }
 }
