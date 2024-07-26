@@ -7,7 +7,7 @@
         title="geoconnex.us"
         class="logo-geoconnex"
       />
-  </a>
+    </a>
   </div>
 </template>
 

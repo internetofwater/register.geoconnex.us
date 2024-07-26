@@ -42,8 +42,9 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                           >1:N example</v-btn
                         >
                         <br />
-                        For more detailed info, see the <a href="#contribution">contribution documentation</a> at the bottom of
-                        the page
+                        For more detailed info, see the
+                        <a href="#contribution">contribution documentation</a> at the bottom of the
+                        page
                       </v-card-text>
                     </v-expansion-panel-text>
                   </v-expansion-panel>
@@ -60,8 +61,8 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                   hint="Example: usgs"
                   variant="outlined"
                   required
-                ></v-text-field>
-              </v-col><v-col cols="8">
+                ></v-text-field> </v-col
+              ><v-col cols="8">
                 <v-file-input
                   v-model="file"
                   label="CSV Mapping"
