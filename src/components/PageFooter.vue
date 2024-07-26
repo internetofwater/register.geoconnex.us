@@ -9,12 +9,7 @@
       />
     </a>
     <a href="https://cgsearth.org" class="logo-link">
-      <img
-        src="@/assets/logo-cgs.png"
-        alt="Geoconnex Logo"
-        title="cgsearth.org"
-        class="logo-img"
-      />
+      <img src="@/assets/logo-cgs.png" alt="Geoconnex Logo" title="cgsearth.org" class="logo-img" />
     </a>
   </div>
 </template>
