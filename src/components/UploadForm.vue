@@ -5,7 +5,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
 <template>
   <v-container class="fill-height" fluid>
     <v-row justify="center">
-      <v-col cols="12" sm="8" md="6">
+      <v-col cols="12" sm="8">
         <v-form id="uploadForm" @submit.prevent="submitForm" class="form-container">
           <v-container class="form-content">
             <v-row>
@@ -18,55 +18,61 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                 >Ensure your identifiers are well-documented and all info is up-to-date to so that
                 Geoconnex administrators can follow up with you if there are any issues.</i
               >
-              <v-col cols="12">
-                <v-text-field
-                  v-model="namespace"
-                  label="Namespace"
-                  hint="Example: usgs"
-                  required
-                ></v-text-field>
+              <v-col cols="10" offset="1">
                 <v-expansion-panels class="contribution-button mb-5">
-                  <v-expansion-panel title="CSV templates and formatting info" bg-color="#f4f4f9">
+                  <v-expansion-panel title="CSV Formatting Information" bg-color="#f4f4f9">
                     <v-expansion-panel-text class="expansion-panel text-1b335f">
                       <v-card-text class="markdown-card-text text-center pa-0 ma-0">
-                        The 4 columns in your CSV should be: <br />
+                        The 4 columns in your CSV mapping should be: <br />
                         <code>id target creator description</code>
                         <br />
                         <v-btn
-                          density="compact"
                           class="flex ma-2"
                           target="_blank"
+                          variant="test"
+                          append-icon="mdi-open-in-new"
                           href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/hydrologic-unit.csv"
-                          >View a 1:1 example</v-btn
+                          >1:1 example</v-btn
                         >
                         <v-btn
-                          density="compact"
                           target="_blank"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/SELFIE/SELFIE_ids.csv"
-                          >View a 1:N example</v-btn
+                          variant="text"
+                          append-icon="mdi-open-in-new"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv"
+                          >1:N example</v-btn
                         >
                         <br />
-                        For more detailed info, see the contribution documentation at the bottom of
+                        For more detailed info, see the <a href="#contribution">contribution documentation</a> at the bottom of
                         the page
                       </v-card-text>
                     </v-expansion-panel-text>
                   </v-expansion-panel>
                 </v-expansion-panels>
-
+                <!-- <v-col cols="12">
+                <v-file-input v-model="readme" label="Readme for Namespace" accept=".md" outlined>
+                </v-file-input> 
+              </v-col> -->
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="namespace"
+                  label="Namespace"
+                  hint="Example: usgs"
+                  variant="outlined"
+                  required
+                ></v-text-field>
+              </v-col><v-col cols="8">
                 <v-file-input
                   v-model="file"
                   label="CSV Mapping"
                   accept=".csv"
                   required
                   show-size
-                  outlined
+                  variant="outlined"
                   @change="checkValid"
-                >
-                </v-file-input>
-                <!-- <v-col cols="12">
-                <v-file-input v-model="readme" label="Readme for Namespace" accept=".md" outlined>
-                </v-file-input> 
-              </v-col> -->
+                />
+              </v-col>
+              <v-col cols="12">
                 <v-checkbox
                   label="I already have a readme file uploaded to my namespace and do not wish to update my contribution info"
                   v-model="readmeAlreadyUploaded"
@@ -317,7 +323,6 @@ export default defineComponent({
   border-radius: 10px;
   box-shadow: 0 0 80px rgba(0, 0, 0, 0.1);
   width: 80%;
-  max-width: 600px;
   margin: 0 auto;
 }
 
