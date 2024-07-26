@@ -60,6 +60,12 @@ export default defineComponent({
   width: 50%;
 }
 
+@media (max-width: 480px) {
+  .contribution-button {
+    width: 80%;
+  }
+}
+
 .expansion-panel {
   background-color: #f4f4f9;
   color: #333;

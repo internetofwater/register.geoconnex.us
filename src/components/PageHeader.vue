@@ -28,4 +28,10 @@
   height: auto;
   /* Maintain aspect ratio */
 }
+
+@media (max-width: 500px) {
+  .logo-geoconnex {
+    width: 360px;
+  }
+}
 </style>
