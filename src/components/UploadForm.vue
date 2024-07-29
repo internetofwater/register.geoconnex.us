@@ -31,7 +31,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                           target="_blank"
                           variant="test"
                           append-icon="mdi-open-in-new"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/hydrologic-unit.csv"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/example-namespace/example_ids.csv"
                           >1:1 example</v-btn
                         >
                         <v-btn
