@@ -160,7 +160,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
             <v-alert
               color="success"
               icon="$success"
-              title="PR Submitted"
+              title="Data Links Submitted"
               :text="result"
               v-if="error.type == null && result && !progress.running"
             ></v-alert>
