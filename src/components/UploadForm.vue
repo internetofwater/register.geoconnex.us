@@ -73,7 +73,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                 </v-file-input> 
               </v-col> -->
               </v-col>
-              <v-col cols="4">
+              <v-col cols="12" md="4">
                 <v-text-field
                   v-model="namespace"
                   label="Namespace"
@@ -81,7 +81,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                   variant="outlined"
                   required
                 ></v-text-field> </v-col
-              ><v-col cols="8">
+              ><v-col cols="12" md="8">
                 <v-file-input
                   v-model="file"
                   label="CSV Mapping"
