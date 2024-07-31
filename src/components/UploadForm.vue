@@ -9,20 +9,36 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
         <v-form id="uploadForm" @submit.prevent="submitForm" class="form-container">
           <v-container class="form-content">
             <v-row>
-              <i class="text-center pa-4"
-                >Submit a csv file that will register persistent URL-formatted identifiers for your
-                organization's monitoring locations within a "namespace" (short name for your
-                organization).
-              </i>
-              <i class="text-center pa-4"
-                >Ensure your identifiers are well-documented and all info is up-to-date to so that
-                Geoconnex administrators can follow up with you if there are any issues.</i
-              >
-              <v-col cols="10" offset="1">
+              <p class="text-center pa-4">
+                The <a href="https://geoconnex.us">geoconnex.us</a> project provides technical
+                infrastructure and guidance for creating an open, community-contribution model for a
+                knowledge graph linking hydrologic features in the United States, published in
+                accordance with Spatial Data on the Web best practices as an implementation of
+                Internet of Water principles.
+              </p>
+              <p class="text-center pa-4">
+                This tool allows users to create Geoconnex linkages to their own water data. Submit
+                a CSV file to register persistent URL-formatted identifiers for your organization's
+                monitoring locations within a 'namespace' (short name for your organization). The
+                features you link to must already exist online and have their own web page, if this
+                is not true, learn how to do so
+                <a href="https://docs.geoconnex.us/reference/data-formats/jsonld/primer/building"
+                  >here</a
+                >.
+              </p>
+              <v-col cols="12">
                 <v-expansion-panels class="contribution-button mb-5">
                   <v-expansion-panel title="CSV Formatting Information" bg-color="#f4f4f9">
                     <v-expansion-panel-text class="expansion-panel text-1b335f">
                       <v-card-text class="markdown-card-text text-center pa-0 ma-0">
+                        <v-row>
+                          <i class="pa-4"
+                            >Ensure your identifiers are well-documented and all info is up-to-date
+                            to so that Geoconnex administrators can follow up with you if there are
+                            any issues.</i
+                          >
+                        </v-row>
+                        <br />
                         The 4 columns in your CSV mapping should be: <br />
                         <code>id target creator description</code>
                         <br />
@@ -31,7 +47,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                           target="_blank"
                           variant="test"
                           append-icon="mdi-open-in-new"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/hydrologic-unit.csv"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/iow/demo.csv"
                           >1:1 example</v-btn
                         >
                         <v-btn
@@ -43,8 +59,9 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                         >
                         <br />
                         For more detailed info, see the
-                        <a href="#contribution">contribution documentation</a> at the bottom of the
-                        page
+                        <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
+                          CSV formatting documentation</a
+                        >
                       </v-card-text>
                     </v-expansion-panel-text>
                   </v-expansion-panel>
@@ -54,7 +71,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                 </v-file-input> 
               </v-col> -->
               </v-col>
-              <v-col cols="4">
+              <v-col cols="12" md="4">
                 <v-text-field
                   v-model="namespace"
                   label="Namespace"
@@ -62,7 +79,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                   variant="outlined"
                   required
                 ></v-text-field> </v-col
-              ><v-col cols="8">
+              ><v-col cols="12" md="8">
                 <v-file-input
                   v-model="file"
                   label="CSV Mapping"
@@ -94,6 +111,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                     label="Homepage for where redirects will point to"
                     type="url"
                     required
+                    variant="outlined"
                     hint="Example: https://waterdata.usgs.gov"
                     persistent-hint
                     class="pb-4"
@@ -103,6 +121,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                     v-model="description"
                     label="Description of data"
                     required
+                    variant="outlined"
                     hint="Example: All monitoring locations used by the USGS Waterdata system"
                     persistent-hint
                     class="pb-4"
@@ -112,6 +131,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                     v-model="example_pid"
                     label="Example PID"
                     required
+                    variant="outlined"
                     hint="Example: https://geoconnex.us/usgs/monitoring-location/08383500"
                     persistent-hint
                     class="pb-4"
@@ -121,6 +141,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                     v-model="example_redirect_target"
                     label="Example redirect target url"
                     type="url"
+                    variant="outlined"
                     hint="Example: https://waterdata.usgs.gov/monitoring-location/08383500"
                     persistent-hint
                     class="pb-4"
@@ -131,6 +152,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                     label="Contact name"
                     hint="Example: John Smith"
                     required
+                    variant="outlined"
                     class="pb-4"
                   ></v-text-field>
 
@@ -139,6 +161,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                     label="Contact email"
                     append-inner-icon="mdi-email"
                     required
+                    variant="outlined"
                     type="email"
                     hint="Example: user@usgs.gov"
                   ></v-text-field>
@@ -160,7 +183,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
             <v-alert
               color="success"
               icon="$success"
-              title="PR Submitted"
+              title="Data Links Submitted"
               :text="result"
               v-if="error.type == null && result && !progress.running"
             ></v-alert>
