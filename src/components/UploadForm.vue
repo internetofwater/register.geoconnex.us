@@ -9,25 +9,23 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
         <v-form id="uploadForm" @submit.prevent="submitForm" class="form-container">
           <v-container class="form-content">
             <v-row>
-              <p class="text-center pa-4"
-                >The <a href="https://geoconnex.us">geoconnex.us</a> project provides technical
+              <p class="text-center pa-4">
+                The <a href="https://geoconnex.us">geoconnex.us</a> project provides technical
                 infrastructure and guidance for creating an open, community-contribution model for a
                 knowledge graph linking hydrologic features in the United States, published in
                 accordance with Spatial Data on the Web best practices as an implementation of
                 Internet of Water principles.
               </p>
-              <p class="text-center pa-4"
-                >This tool allows users to create Geoconnex linkages to their own water
-                data. Submit a CSV file to register persistent URL-formatted identifiers
-                for your organization's monitoring locations within a 'namespace' (short
-                name for your organization). The features you link to must already exist
-                online and have their own web page, if this is not true, learn how to do
-                so
-                <a
-                  href="https://docs.geoconnex.us/reference/data-formats/jsonld/primer/building"
+              <p class="text-center pa-4">
+                This tool allows users to create Geoconnex linkages to their own water data. Submit
+                a CSV file to register persistent URL-formatted identifiers for your organization's
+                monitoring locations within a 'namespace' (short name for your organization). The
+                features you link to must already exist online and have their own web page, if this
+                is not true, learn how to do so
+                <a href="https://docs.geoconnex.us/reference/data-formats/jsonld/primer/building"
                   >here</a
                 >.
-            </p>
+              </p>
               <v-col cols="12">
                 <v-expansion-panels class="contribution-button mb-5">
                   <v-expansion-panel title="CSV Formatting Information" bg-color="#f4f4f9">
