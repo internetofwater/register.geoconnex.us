@@ -9,10 +9,12 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
         <v-form id="uploadForm" @submit.prevent="submitForm" class="form-container">
           <v-container class="form-content">
             <v-row>
-              <i class="text-center pa-4"
-                >Submit a csv file that will register persistent URL-formatted identifiers for your
-                organization's monitoring locations within a "namespace" (short name for your
-                organization).
+              <i class="pa-4"
+                >The <a href="https://geoconnex.us">geoconnex.us</a> project provides technical 
+                infrastructure and guidance for creating an open, community-contribution model
+                for a knowledge graph linking hydrologic features in the United States, 
+                published in accordance with Spatial Data on the Web best practices as an 
+                implementation of Internet of Water principles.
               </i>
               <v-col cols="12">
                 <v-expansion-panels class="contribution-button mb-5">
