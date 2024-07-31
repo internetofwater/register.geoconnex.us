@@ -10,11 +10,11 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
           <v-container class="form-content">
             <v-row>
               <i class="pa-4"
-                >The <a href="https://geoconnex.us">geoconnex.us</a> project provides technical 
-                infrastructure and guidance for creating an open, community-contribution model
-                for a knowledge graph linking hydrologic features in the United States, 
-                published in accordance with Spatial Data on the Web best practices as an 
-                implementation of Internet of Water principles.
+                >The <a href="https://geoconnex.us">geoconnex.us</a> project provides technical
+                infrastructure and guidance for creating an open, community-contribution model for a
+                knowledge graph linking hydrologic features in the United States, published in
+                accordance with Spatial Data on the Web best practices as an implementation of
+                Internet of Water principles.
               </i>
               <v-col cols="12">
                 <v-expansion-panels class="contribution-button mb-5">
@@ -22,18 +22,23 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                     <v-expansion-panel-text class="expansion-panel text-1b335f">
                       <v-card-text class="markdown-card-text text-center pa-0 ma-0">
                         <v-row>
-                        <i class="pa-4"
-                          >This tool allows users to create Geoconnex linkages to their own water data.
-                           Submit a CSV file to register persistent URL-formatted identifiers for your 
-                           organization's monitoring locations within a 'namespace' (short name for 
-                           your organization). The features you link to must already exist 
-                           online and have their own web page, if this is not true, learn how to do so
-                           <a href="https://docs.geoconnex.us/reference/data-formats/jsonld/primer/building">here</a>.
-                        </i>
-                        <i class="pa-4"
-                          >Ensure your identifiers are well-documented and all info is up-to-date to so that
-                          Geoconnex administrators can follow up with you if there are any issues.</i
-                        >
+                          <i class="pa-4"
+                            >This tool allows users to create Geoconnex linkages to their own water
+                            data. Submit a CSV file to register persistent URL-formatted identifiers
+                            for your organization's monitoring locations within a 'namespace' (short
+                            name for your organization). The features you link to must already exist
+                            online and have their own web page, if this is not true, learn how to do
+                            so
+                            <a
+                              href="https://docs.geoconnex.us/reference/data-formats/jsonld/primer/building"
+                              >here</a
+                            >.
+                          </i>
+                          <i class="pa-4"
+                            >Ensure your identifiers are well-documented and all info is up-to-date
+                            to so that Geoconnex administrators can follow up with you if there are
+                            any issues.</i
+                          >
                         </v-row>
                         <br />
                         The 4 columns in your CSV mapping should be: <br />
@@ -56,7 +61,9 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                         >
                         <br />
                         For more detailed info, see the
-                        <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/"> CSV formatting documentation</a>
+                        <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
+                          CSV formatting documentation</a
+                        >
                       </v-card-text>
                     </v-expansion-panel-text>
                   </v-expansion-panel>
