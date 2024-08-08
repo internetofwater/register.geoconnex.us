@@ -16,31 +16,91 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                 accordance with Spatial Data on the Web best practices as an implementation of
                 Internet of Water principles.
               </p>
+
               <p class="text-center pa-4">
                 This tool allows users to create Geoconnex linkages to their own water data. Submit
                 a CSV file to register persistent URL-formatted identifiers for your organization's
-                monitoring locations within a 'namespace' (short name for your organization). The
-                features you link to must already exist online and have their own web page, if this
-                is not true, learn how to do so
-                <a href="https://docs.geoconnex.us/reference/data-formats/jsonld/primer/building"
-                  >here</a
-                >.
+                monitoring locations within a 'namespace' <i>(short name for your organization)</i>.
+                The features you link to must already exist online and have their own web page.
               </p>
+              <v-alert
+                color="info"
+                class="mb-2"
+                icon="$info"
+                variant="tonal"
+                title="Additional details "
+              >
+                For more details, the
+                <a href="https://docs.geoconnex.us/">geoconnex documentation</a> provides a general
+                overview of geoconnex and a tutorial for how to:
+                <ol>
+                  <li>
+                    1.
+                    <a href="https://docs.geoconnex.us/contributing/step-1/idscheme">
+                      Prepare your data</a
+                    >
+                    with the proper metadata context
+                  </li>
+                  <li>
+                    2. Host your data, if you have not done so already, with
+                    <a href="https://docs.geoconnex.us/contributing/step-2/"
+                      >individual web pages</a
+                    >
+                    that can be linked to as the "target" column in your uploaded CSV
+                  </li>
+                  <li>
+                    3.<a href="https://docs.geoconnex.us/contributing/step-3/minting">
+                      Submit your CSV data</a
+                    >, either here or Github, after checking it is
+                    <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
+                      properly formatted</a
+                    >
+                  </li>
+                </ol>
+              </v-alert>
               <v-col cols="12">
-                <v-expansion-panels class="contribution-button mb-5">
-                  <v-expansion-panel title="CSV Formatting Information" bg-color="#f4f4f9">
+                <v-expansion-panels class="contribution-button mb-5" v-model="activePanel">
+                  <v-expansion-panel title="CSV Formatting Reference" bg-color="#f4f4f9" value="1">
                     <v-expansion-panel-text class="expansion-panel text-1b335f">
                       <v-card-text class="markdown-card-text text-center pa-0 ma-0">
-                        <v-row>
-                          <i class="pa-4"
-                            >Ensure your identifiers are well-documented and all info is up-to-date
-                            to so that Geoconnex administrators can follow up with you if there are
-                            any issues.</i
-                          >
-                        </v-row>
                         <br />
-                        The 4 columns in your CSV mapping should be: <br />
-                        <code>id target creator description</code>
+                        <i class="pa-12"
+                          >Ensure your identifiers are well-documented and all info is up-to-date to
+                          so that Geoconnex administrators can follow up with you if there are any
+                          issues.</i
+                        >
+                        <br />
+                        <br />
+                        <p class="text-center mb-4">
+                          The 4 columns required in your CSV mapping should be:
+                        </p>
+
+                        <div class="d-flex mx-4 px-4">
+                          <p>
+                            <b><code>id </code></b> <br />
+                            <i
+                              >The ID within geoconnex that your data should map to. These are
+                              unique, will redirect to the associated target, and are meant for
+                              individual monitoring locations.
+                            </i>
+                          </p>
+                          <p>
+                            <b><code>target </code></b> <br />
+                            <i
+                              >The URL pointing to a JSON-LD landing page for a single feature in
+                              your data.</i
+                            >
+                          </p>
+                          <p>
+                            <b><code>creator </code></b> <br />
+                            <i>A contact email for someone associated with the data</i>
+                          </p>
+                          <p>
+                            <b><code>description </code></b> <br />
+                            <i>A description of your data.</i>
+                          </p>
+                        </div>
+
                         <br />
                         <v-btn
                           class="flex ma-2"
@@ -58,7 +118,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                           >1:N example</v-btn
                         >
                         <br />
-                        For more detailed info, see the
+                        For more detailed info regarding the format of your CSV, see the
                         <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
                           CSV formatting documentation</a
                         >
@@ -66,20 +126,24 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                     </v-expansion-panel-text>
                   </v-expansion-panel>
                 </v-expansion-panels>
-                <!-- <v-col cols="12">
-                <v-file-input v-model="readme" label="Readme for Namespace" accept=".md" outlined>
-                </v-file-input> 
-              </v-col> -->
+
+                <h2 class="text-center mt-16">Upload your CSV Mapping</h2>
+                <p class="text-center mx-15 pa-4 font-italic">
+                  A new namespace for your organization will be created upon submission if it does
+                  not already exist. If the namespace for your organization already exists, a new
+                  CSV file will be added to the existing namespace
+                </p>
               </v-col>
-              <v-col cols="12" md="4">
+
+              <v-row class="ma-4">
                 <v-text-field
                   v-model="namespace"
                   label="Namespace"
                   hint="Example: usgs"
                   variant="outlined"
                   required
-                ></v-text-field> </v-col
-              ><v-col cols="12" md="8">
+                ></v-text-field>
+
                 <v-file-input
                   v-model="file"
                   label="CSV Mapping"
@@ -89,9 +153,11 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                   variant="outlined"
                   @change="checkValid"
                 />
-              </v-col>
+              </v-row>
+
               <v-col cols="12">
                 <v-checkbox
+                  class="d-flex justify-center mb-4"
                   label="I already have a readme file uploaded to my namespace and do not wish to update my contribution info"
                   v-model="readmeAlreadyUploaded"
                 >
@@ -101,7 +167,7 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                   <div>
                     <v-card-text class="text-center">
                       <v-row class="d-flex justify-center">
-                        <h2>Contribution Information</h2>
+                        <h2 class="mb-4">Add or Update Contribution Information</h2>
                         <!-- <v-icon icon="mdi-information" class="ml-3" color="#1B335F" :onclick="toggleHelp"></v-icon> -->
                       </v-row>
                     </v-card-text>
@@ -241,7 +307,8 @@ export default defineComponent({
       readmeAlreadyUploaded: false,
       progress: { running: false, action: '' },
       crawlErrors: [] as ValidationReport['crawlErrors'],
-      hideSubmission: false
+      hideSubmission: false,
+      activePanel: '1'
     }
   },
   methods: {

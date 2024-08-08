@@ -2,7 +2,6 @@
 import UploadForm from './components/UploadForm.vue'
 import PageHeader from './components/PageHeader.vue'
 import PageFooter from './components/PageFooter.vue'
-import ContributionInfo from './components/ContributionInfo.vue'
 import '@mdi/font/css/materialdesignicons.css'
 </script>
 
@@ -10,7 +9,6 @@ import '@mdi/font/css/materialdesignicons.css'
   <PageHeader />
   <h1>Register Persistant Identifiers for Geoconnex</h1>
   <UploadForm />
-  <ContributionInfo />
   <PageFooter />
 </template>
 
