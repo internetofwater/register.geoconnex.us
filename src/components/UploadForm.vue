@@ -23,7 +23,13 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                 monitoring locations within a 'namespace' <i>(short name for your organization)</i>.
                 The features you link to must already exist online and have their own web page.
               </p>
-              <v-alert color="info" class="mb-2" icon="$info" variant="tonal" title="Additional details ">
+              <v-alert
+                color="info"
+                class="mb-2"
+                icon="$info"
+                variant="tonal"
+                title="Additional details "
+              >
                 For more details, the
                 <a href="https://docs.geoconnex.us/">geoconnex documentation</a> provides a general
                 overview of geoconnex and a tutorial for how to:
@@ -31,19 +37,24 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                   <li>
                     1.
                     <a href="https://docs.geoconnex.us/contributing/step-1/idscheme">
-                      Prepare your data</a>
+                      Prepare your data</a
+                    >
                     with the proper metadata context
                   </li>
                   <li>
                     2. Host your data, if you have not done so already, with
-                    <a href="https://docs.geoconnex.us/contributing/step-2/">individual web pages</a>
+                    <a href="https://docs.geoconnex.us/contributing/step-2/"
+                      >individual web pages</a
+                    >
                     that can be linked to as the "target" column in your uploaded CSV
                   </li>
                   <li>
                     3.<a href="https://docs.geoconnex.us/contributing/step-3/minting">
-                      Submit your CSV data</a>, either here or Github, after checking it is
+                      Submit your CSV data</a
+                    >, either here or Github, after checking it is
                     <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
-                      properly formatted</a>
+                      properly formatted</a
+                    >
                   </li>
                 </ol>
               </v-alert>
@@ -53,73 +64,103 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                     <v-expansion-panel-text class="expansion-panel text-1b335f">
                       <v-card-text class="markdown-card-text text-center pa-0 ma-0">
                         <br />
-                        <i class="pa-12">Ensure your identifiers are well-documented and all info is up-to-date
-                          to so that Geoconnex administrators can follow up with you if there are
-                          any issues.</i>
-                        <br>
-                        <br>
+                        <i class="pa-12"
+                          >Ensure your identifiers are well-documented and all info is up-to-date to
+                          so that Geoconnex administrators can follow up with you if there are any
+                          issues.</i
+                        >
+                        <br />
+                        <br />
                         <p class="text-center mb-4">
                           The 4 columns required in your CSV mapping should be:
                         </p>
-                        
 
                         <div class="d-flex mx-4 px-4">
-  <p>
-    <b><code>id </code></b> <br />
-    <i>The ID within geoconnex that your data should map to. These are unique, will redirect to
-      the associated target, and are meant for individual monitoring locations. </i>
-  </p>
-  <p>
-    <b><code>target </code></b> <br />
-    <i>The URL pointing to a JSON-LD landing page for a single feature in your data.</i>
-  </p>
-  <p>
-    <b><code>creator </code></b> <br />
-    <i>A contact email for someone associated with the data</i>
-  </p>
-  <p>
-    <b><code>description </code></b> <br />
-    <i>A description of your data.</i>
-  </p>
-</div>
-
-
+                          <p>
+                            <b><code>id </code></b> <br />
+                            <i
+                              >The ID within geoconnex that your data should map to. These are
+                              unique, will redirect to the associated target, and are meant for
+                              individual monitoring locations.
+                            </i>
+                          </p>
+                          <p>
+                            <b><code>target </code></b> <br />
+                            <i
+                              >The URL pointing to a JSON-LD landing page for a single feature in
+                              your data.</i
+                            >
+                          </p>
+                          <p>
+                            <b><code>creator </code></b> <br />
+                            <i>A contact email for someone associated with the data</i>
+                          </p>
+                          <p>
+                            <b><code>description </code></b> <br />
+                            <i>A description of your data.</i>
+                          </p>
+                        </div>
 
                         <br />
-                        <v-btn class="flex ma-2" target="_blank" variant="test" append-icon="mdi-open-in-new"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/iow/demo.csv">1:1
-                          example</v-btn>
-                        <v-btn target="_blank" variant="text" append-icon="mdi-open-in-new"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv">1:N
-                          example</v-btn>
+                        <v-btn
+                          class="flex ma-2"
+                          target="_blank"
+                          variant="test"
+                          append-icon="mdi-open-in-new"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/iow/demo.csv"
+                          >1:1 example</v-btn
+                        >
+                        <v-btn
+                          target="_blank"
+                          variant="text"
+                          append-icon="mdi-open-in-new"
+                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv"
+                          >1:N example</v-btn
+                        >
                         <br />
                         For more detailed info regarding the format of your CSV, see the
                         <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
-                          CSV formatting documentation</a>
+                          CSV formatting documentation</a
+                        >
                       </v-card-text>
                     </v-expansion-panel-text>
                   </v-expansion-panel>
                 </v-expansion-panels>
 
-                <h2 class="text-center mt-16"> Upload your CSV Mapping </h2>
-                <p class="text-center mx-15 pa-4 font-italic">A new namespace for your organization will be created upon submission
-                  if it does not already exist.  If the namespace for your organization already exists, a new CSV file will
-                  be added to the existing namespace </p>
+                <h2 class="text-center mt-16">Upload your CSV Mapping</h2>
+                <p class="text-center mx-15 pa-4 font-italic">
+                  A new namespace for your organization will be created upon submission if it does
+                  not already exist. If the namespace for your organization already exists, a new
+                  CSV file will be added to the existing namespace
+                </p>
               </v-col>
-              
+
               <v-row class="ma-4">
+                <v-text-field
+                  v-model="namespace"
+                  label="Namespace"
+                  hint="Example: usgs"
+                  variant="outlined"
+                  required
+                ></v-text-field>
 
-                <v-text-field v-model="namespace" label="Namespace" hint="Example: usgs" variant="outlined"
-                  required></v-text-field>
-
-                <v-file-input v-model="file" label="CSV Mapping" accept=".csv" required show-size variant="outlined"
-                  @change="checkValid" />
+                <v-file-input
+                  v-model="file"
+                  label="CSV Mapping"
+                  accept=".csv"
+                  required
+                  show-size
+                  variant="outlined"
+                  @change="checkValid"
+                />
               </v-row>
 
               <v-col cols="12">
-                <v-checkbox class="d-flex justify-center mb-4"
+                <v-checkbox
+                  class="d-flex justify-center mb-4"
                   label="I already have a readme file uploaded to my namespace and do not wish to update my contribution info"
-                  v-model="readmeAlreadyUploaded">
+                  v-model="readmeAlreadyUploaded"
+                >
                 </v-checkbox>
 
                 <div v-if="!readmeAlreadyUploaded">
@@ -131,39 +172,87 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
                       </v-row>
                     </v-card-text>
                   </div>
-                  <v-text-field v-model="homepage" label="Homepage for where redirects will point to" type="url"
-                    required variant="outlined" hint="Example: https://waterdata.usgs.gov" persistent-hint
-                    class="pb-4"></v-text-field>
+                  <v-text-field
+                    v-model="homepage"
+                    label="Homepage for where redirects will point to"
+                    type="url"
+                    required
+                    variant="outlined"
+                    hint="Example: https://waterdata.usgs.gov"
+                    persistent-hint
+                    class="pb-4"
+                  ></v-text-field>
 
-                  <v-textarea v-model="description" label="Description of data" required variant="outlined"
-                    hint="Example: All monitoring locations used by the USGS Waterdata system" persistent-hint
-                    class="pb-4"></v-textarea>
+                  <v-textarea
+                    v-model="description"
+                    label="Description of data"
+                    required
+                    variant="outlined"
+                    hint="Example: All monitoring locations used by the USGS Waterdata system"
+                    persistent-hint
+                    class="pb-4"
+                  ></v-textarea>
 
-                  <v-text-field v-model="example_pid" label="Example PID" required variant="outlined"
-                    hint="Example: https://geoconnex.us/usgs/monitoring-location/08383500" persistent-hint
-                    class="pb-4"></v-text-field>
+                  <v-text-field
+                    v-model="example_pid"
+                    label="Example PID"
+                    required
+                    variant="outlined"
+                    hint="Example: https://geoconnex.us/usgs/monitoring-location/08383500"
+                    persistent-hint
+                    class="pb-4"
+                  ></v-text-field>
 
-                  <v-text-field v-model="example_redirect_target" label="Example redirect target url" type="url"
-                    variant="outlined" hint="Example: https://waterdata.usgs.gov/monitoring-location/08383500"
-                    persistent-hint class="pb-4"></v-text-field>
+                  <v-text-field
+                    v-model="example_redirect_target"
+                    label="Example redirect target url"
+                    type="url"
+                    variant="outlined"
+                    hint="Example: https://waterdata.usgs.gov/monitoring-location/08383500"
+                    persistent-hint
+                    class="pb-4"
+                  ></v-text-field>
 
-                  <v-text-field v-model="contact_name" label="Contact name" hint="Example: John Smith" required
-                    variant="outlined" class="pb-4"></v-text-field>
+                  <v-text-field
+                    v-model="contact_name"
+                    label="Contact name"
+                    hint="Example: John Smith"
+                    required
+                    variant="outlined"
+                    class="pb-4"
+                  ></v-text-field>
 
-                  <v-text-field v-model="contact_email" label="Contact email" append-inner-icon="mdi-email" required
-                    variant="outlined" type="email" hint="Example: user@usgs.gov"></v-text-field>
+                  <v-text-field
+                    v-model="contact_email"
+                    label="Contact email"
+                    append-inner-icon="mdi-email"
+                    required
+                    variant="outlined"
+                    type="email"
+                    hint="Example: user@usgs.gov"
+                  ></v-text-field>
                 </div>
               </v-col>
             </v-row>
           </v-container>
           <v-fade-transition>
-            <v-alert :color="error.level || 'error'" :icon="`$${error.level || 'error'}`" :title="error.type"
-              :text="error.text" v-if="error.type && !progress.running">
+            <v-alert
+              :color="error.level || 'error'"
+              :icon="`$${error.level || 'error'}`"
+              :title="error.type"
+              :text="error.text"
+              v-if="error.type && !progress.running"
+            >
             </v-alert>
           </v-fade-transition>
           <v-fade-transition>
-            <v-alert color="success" icon="$success" title="Data Links Submitted" :text="result"
-              v-if="error.type == null && result && !progress.running"></v-alert>
+            <v-alert
+              color="success"
+              icon="$success"
+              title="Data Links Submitted"
+              :text="result"
+              v-if="error.type == null && result && !progress.running"
+            ></v-alert>
           </v-fade-transition>
           <v-col cols="12" class="text-center" v-if="!hideSubmission">
             <v-btn type="submit" color="#00A087"> Submit </v-btn>
