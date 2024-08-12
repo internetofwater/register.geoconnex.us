@@ -9,47 +9,65 @@ import GeoconnexBackground from '@/components/GeoconnexBackground.vue'
   <v-container class="fill-height" fluid>
     <v-row justify="center">
       <v-col cols="12" sm="8">
-        <v-stepper :items="['Step 1: Review Background', 'Step 2: Add CSV', 'Step 3: Add Metadata', 'Step 4: Submit']" :hide-actions="hideNext">
+        <v-stepper
+          :items="[
+            'Step 1: Review Background',
+            'Step 2: Add CSV',
+            'Step 3: Add Metadata',
+            'Step 4: Submit'
+          ]"
+          :hide-actions="hideNext"
+        >
           <template v-slot:item.1>
             <GeoconnexBackground />
           </template>
 
           <template v-slot:item.2>
-
             <v-col cols="12" class="text-center">
-
               <h2 class="text-center">Upload your CSV Mapping</h2>
 
-              <CSVReference class="mt-4"/>
+              <CSVReference class="mt-4" />
 
               <p class="text-center mx-15 pa-4 font-italic">
-                A namespace is a short name or alias for your organization. It will be created upon submission if it does
-                not already exist. If the namespace already exists, your new
+                A namespace is a short name or alias for your organization. It will be created upon
+                submission if it does not already exist. If the namespace already exists, your new
                 CSV file will be added to the existing namespace
               </p>
 
               <v-row class="ma-4">
-                <v-text-field v-model="namespace" label="Namespace" hint="Example: usgs" persistent-hint variant="outlined"
-                  required></v-text-field>
+                <v-text-field
+                  v-model="namespace"
+                  label="Namespace"
+                  hint="Example: usgs"
+                  persistent-hint
+                  variant="outlined"
+                  required
+                ></v-text-field>
 
-                <v-file-input v-model="file" label="CSV Mapping" accept=".csv" required show-size variant="outlined"
-                  @change="checkValid" />
+                <v-file-input
+                  v-model="file"
+                  label="CSV Mapping"
+                  accept=".csv"
+                  required
+                  show-size
+                  variant="outlined"
+                  @change="checkValid"
+                />
               </v-row>
-
 
               <URLCheckSummary :crawlErrors="crawlErrors" class="mt-4"></URLCheckSummary>
 
-
-              <v-btn v-if="error.type === 'Issues Checking CSV'" @click="overrideError" class="mt-6">
+              <v-btn
+                v-if="error.type === 'Issues Checking CSV'"
+                @click="overrideError"
+                class="mt-6"
+              >
                 Ignore warning and override
               </v-btn>
-
             </v-col>
-
           </template>
 
           <template v-slot:item.3>
-
             <ReadmeGenerator :namespace="namespace" @result="setReadme" />
 
             <v-col cols="12" class="text-center">
@@ -60,28 +78,33 @@ import GeoconnexBackground from '@/components/GeoconnexBackground.vue'
                 <p>{{ progress.action }}</p>
               </div>
             </v-col>
-
           </template>
 
           <template v-slot:item.4>
-
-
             <h2 class="text-center">Upload your CSV Mapping</h2>
 
-
             <v-fade-transition class="mt-4">
-                <v-alert :color="error.level || 'error'" :icon="`$${error.level || 'error'}`" :title="error.type"
-                  :text="error.text" v-if="error.type && !progress.running">
-                </v-alert>
-                <v-alert color="success" icon="$success" title="Data Links Submitted" :text="result"
-                  v-if="error.type == null && result && !progress.running"></v-alert>
-              </v-fade-transition>
-            
+              <v-alert
+                :color="error.level || 'error'"
+                :icon="`$${error.level || 'error'}`"
+                :title="error.type"
+                :text="error.text"
+                v-if="error.type && !progress.running"
+              >
+              </v-alert>
+              <v-alert
+                color="success"
+                icon="$success"
+                title="Data Links Submitted"
+                :text="result"
+                v-if="error.type == null && result && !progress.running"
+              ></v-alert>
+            </v-fade-transition>
+
             <v-col cols="12" class="text-center" v-if="!hideSubmission">
               <v-btn type="submit" color="#00A087" @click="submitForm"> Submit </v-btn>
             </v-col>
           </template>
-
         </v-stepper>
       </v-col>
     </v-row>
@@ -110,7 +133,7 @@ export default defineComponent({
       result: '',
       progress: { running: false, action: '' },
       crawlErrors: [] as ValidationReport['crawlErrors'],
-      hideSubmission: false,
+      hideSubmission: false
     }
   },
   computed: {
@@ -145,8 +168,7 @@ export default defineComponent({
           }
           return
         }
-      }
-      else {
+      } else {
         this.error = {
           type: 'Checked CSV without errors',
           text: 'Note: automated tests do not check regex URLs. If you have these, please validate any complex logic independently.',
@@ -155,7 +177,6 @@ export default defineComponent({
         this.progress = { running: false, action: '' }
         this.hideSubmission = false
       }
-
     },
     overrideError() {
       this.hideSubmission = false
