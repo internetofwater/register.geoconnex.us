@@ -40,7 +40,7 @@ import { fetchAllNamespaces } from '@/lib/helpers'
       variant="outlined" type="email" hint="Example: user@usgs.gov"></v-text-field>
   </div>
 
-  <v-alert type="error w-50 mx-auto" v-if="!valid" icon="mdi-alert">
+  <v-alert type="error" class="w-50 mx-auto" v-if="!valid" icon="mdi-alert">
     {{ error }}
   </v-alert>
 

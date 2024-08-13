@@ -83,7 +83,7 @@ import { validGeoconnexCSV } from '@/lib/helpers'
 import type { ValidationReport } from '@/lib/types'
 
 interface CheckError {
-  type: 'Issues Checking CSV' | 'Error submitting data' | 'Checked CSV without errors' | null
+  type: 'Issues Checking CSV' | 'Error submitting data' | 'Checked CSV without errors' | undefined
   text: string
   level?: 'error' | 'warning' | 'info'
 }
@@ -110,7 +110,7 @@ export default defineComponent({
 
   methods: {
     async checkValid() {
-      this.checkError = { type: null, text: '' }
+      this.checkError = { type: undefined, text: '' }
       this.crawlErrors = []
 
       if (!this.file) {
@@ -147,7 +147,7 @@ export default defineComponent({
     },
     overrideError() {
       this.hideSubmission = false
-      this.checkError = { type: null, text: '' }
+      this.checkError = { type: undefined, text: '' }
       this.crawlErrors = []
     },
     setMetadata(metadata : { readme: File | null, namespace: string }) {
@@ -158,7 +158,7 @@ export default defineComponent({
 
     async submitForm() {
       // Reset form state before submitting
-      this.checkError = { type: null, text: '' }
+      this.checkError = { type: undefined, text: '' }
       this.result = ''
       this.progress = { running: false, action: '' }
 

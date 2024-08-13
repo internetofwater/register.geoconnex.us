@@ -39,7 +39,6 @@
           <v-btn
             class="flex ma-2"
             target="_blank"
-            variant="test"
             append-icon="mdi-open-in-new"
             href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/iow/demo.csv"
             >1:1 example</v-btn
