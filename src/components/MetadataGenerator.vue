@@ -105,6 +105,12 @@ export default defineComponent({
           namespace: this.namespace
         })
       }
+      else{
+        this.$emit('result', {
+          readme: null,
+          namespace: this.namespace
+        })
+      }
 
       this.error = ''
       return true

@@ -56,6 +56,15 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
           <template v-slot:item.4>
             <h2 class="text-center">Upload your CSV Mapping</h2>
 
+            <v-col cols="12" class="text-center">
+              <div class="justify-center" v-if="progress.running">
+                <v-progress-circular indeterminate color="primary"> </v-progress-circular>
+                <br />
+                <br />
+                <p>{{ progress.action }}</p>
+              </div>
+            </v-col>
+
             <v-fade-transition class="mt-4 mx-auto w-66">
               <v-alert :color="checkError.level || 'error'" :icon="`$${checkError.level || 'error'}`"
                 :title="checkError.type" :text="checkError.text"
