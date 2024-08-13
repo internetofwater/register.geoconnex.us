@@ -41,7 +41,7 @@ import { fetchAllNamespaces } from '@/lib/helpers'
   </div>
 
   <v-alert type="error" class="w-50 mx-auto" v-if="!valid" icon="mdi-alert">
-    {{ error }}
+    {{ error }} 
   </v-alert>
 
 </template>
@@ -64,7 +64,8 @@ export default defineComponent({
       contact_email: '',
       readmeAlreadyUploaded: false,
       existingNamespaces: [] as string[],
-      error: ''
+      error: '',
+      file: null as File | null
     }
   },
   async created() {
@@ -72,11 +73,13 @@ export default defineComponent({
   },
 
   computed: {
-    valid() {
-      return this.namespace && this.namespace.length > 0 && this.error.length === 0
-    },
 
-    readme() {
+    valid() {
+      if (this.namespace.length == 0) {
+        this.error = 'Namespace is required'
+        return false
+      }
+
       if (!this.readmeAlreadyUploaded) {
         const requiredReadmeFields: MarkdownSection[] = [
           { body: this.homepage, sectionName: 'Homepage' },
@@ -90,20 +93,21 @@ export default defineComponent({
         for (const field of requiredReadmeFields) {
           if (field.body.length == 0) {
             this.error = `${field.sectionName} is required`
-            return null
+            return false
           }
         }
 
         const generatedReadme = generateReadMe(this.namespace, requiredReadmeFields)
-        const file = new File([generatedReadme], 'README.md', { type: 'text/plain' })
+        this.file = new File([generatedReadme], 'README.md', { type: 'text/plain' })
         this.error = ''
         this.$emit('result', {
-          readme: file,
+          readme: this.file,
           namespace: this.namespace
         })
       }
 
-      return null
+      this.error = ''
+      return true
     }
   },
 }

@@ -8,7 +8,7 @@ import '@mdi/font/css/materialdesignicons.css'
 <template>
   <v-app class="pa-0 ma-0">
     <PageHeader />
-    <h1 class="text-center">Register Persistent Identifiers for Geoconnex</h1>
+    <h1 class="text-center mt-4">Register Persistent Identifiers for Geoconnex</h1>
     <UploadForm />
     <PageFooter />
   </v-app>
@@ -18,13 +18,7 @@ import '@mdi/font/css/materialdesignicons.css'
 /* Default light mode background color */
 body {
   margin: 0;
-  background-color: white; 
+  padding: 0;
 }
 
-/* Dark mode background color */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #121212; 
-  }
-}
 </style>

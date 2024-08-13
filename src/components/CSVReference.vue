@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels class="contribution-button mb-5" v-model="activePanel">
+  <v-expansion-panels class="panels mb-5" id="panels" color="primary--text" v-model="activePanel">
     <v-expansion-panel title="CSV Formatting Reference" value="1">
       <v-expansion-panel-text class="expansion-panel">
         <v-card-text class="markdown-card-text text-center pa-0 ma-0">
@@ -45,7 +45,6 @@
           >
           <v-btn
             target="_blank"
-            variant="text"
             append-icon="mdi-open-in-new"
             href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv"
             >1:N example</v-btn
@@ -75,3 +74,13 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.expansion-panel {
+  background-color: rgb(var(--v-theme-secondary));
+}
+
+#panels {
+  background-color: rgb(var(--v-theme-secondary));
+}
+</style>

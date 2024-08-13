@@ -11,6 +11,7 @@
   </v-footer>
 </template>
 
+
 <style scoped>
 .footer {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -21,7 +22,6 @@
   align-items: flex-end;
   /* Align items to the bottom */
   height: 120px;
-  /* Ensure height is consistent */
 }
 
 .logo-container {
@@ -33,9 +33,7 @@
 .logo-img {
   width: 180px;
   padding: 0 16px;
-  -webkit-filter: drop-shadow(1px 1px 0 white) drop-shadow(-1px 1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px -1px 0 white);
-
-  filter: drop-shadow(1px 1px 0 white) drop-shadow(-1px 1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px -1px 0 white);
 
 }
+
 </style>

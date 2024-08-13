@@ -1,5 +1,5 @@
 <template>
-  <div class="header pa-6">
+  <div class="header pa-6 mb-4">
     <div class="logo-container">
       <a href="https://geoconnex.us">
         <img src="@/assets/logo-geoconnex.png" alt="Geoconnex Logo" title="geoconnex.us" class="logo-geoconnex" />
@@ -31,7 +31,7 @@ function toggleTheme() {
   /* Space out the logo and the theme icon */
   padding: 10px;
 
-  background-color: var(--v-theme-primary);
+  background-color: rgb(var(--v-theme-primary));
 }
 
 .logo-container {
@@ -57,7 +57,6 @@ function toggleTheme() {
     width: 360px;
   }
 }
-
 
 .logo-geoconnex {
   -webkit-filter: drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.594)) drop-shadow(-1px 1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px -1px 0 white);

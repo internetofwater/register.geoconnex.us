@@ -14,17 +14,18 @@ const buttonColor = "#00A087"
 const customLightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    primary: "#1b335",
-    accent: buttonColor
+    primary: colors.grey.lighten4,
+    secondary: "#e5e9f0",
   },
 }
 
 const customDarkTheme: ThemeDefinition = {
   dark: true,
   colors: {
-    background: colors.grey.darken4,
+    primary:  "#3b4252",
+    background: "#434c5e",
     surface: colors.grey.darken3,
-    secondary: colors.red.darken2,
+    secondary: colors.grey.darken2,
     accent: buttonColor
   },
 }
@@ -33,7 +34,7 @@ const vuetify = createVuetify({
   components,
   directives,
   theme: {
-    defaultTheme: 'dark',
+    defaultTheme: 'light',
     themes: {
       dark: customDarkTheme,
       light: customLightTheme

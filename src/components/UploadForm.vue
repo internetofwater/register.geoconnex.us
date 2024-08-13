@@ -27,13 +27,12 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
             <CSVReference class="mt-4" />
 
 
-            <v-file-input v-model="file" label="CSV Mapping" accept=".csv" required show-size variant="outlined"
-              @change="checkValid" class="w-50 mx-auto" />
+            <v-file-input v-model="csv" label="CSV Mapping" accept=".csv" required show-size variant="outlined"
+              @change="checkCSV" class="w-50 mx-auto" />
 
             <URLCheckSummary :crawlErrors="crawlErrors" :progress="progress" class="mt-4"></URLCheckSummary>
 
-
-            <v-fade-transition class="mt-4">
+            <v-fade-transition class="mx-auto w-66">
               <v-alert :color="checkError.level || 'error'" :icon="`$${checkError.level || 'error'}`"
                 :title="checkError.type" :text="checkError.text" v-if="checkError.type && !progress.running">
               </v-alert>
@@ -42,7 +41,7 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
             </v-fade-transition>
 
 
-            <v-btn v-if="checkError.type === 'Issues Checking CSV'" @click="overrideError" class="mt-6 d-flex mx-auto">
+            <v-btn v-if="checkError.type === 'Issues Checking CSV'" @click="overrideError" class="mt-6 d-flex mx-auto ignoreButton">
               Ignore warning and override
             </v-btn>
           </template>
@@ -57,16 +56,16 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
           <template v-slot:item.4>
             <h2 class="text-center">Upload your CSV Mapping</h2>
 
-            <v-fade-transition class="mt-4">
+            <v-fade-transition class="mt-4 mx-auto w-66">
               <v-alert :color="checkError.level || 'error'" :icon="`$${checkError.level || 'error'}`"
                 :title="checkError.type" :text="checkError.text"
-                v-if="checkError.type != 'Checked CSV without errors' && !progress.running">
+                v-if="checkError.type != 'Checked CSV without errors' && checkError.type && !progress.running">
               </v-alert>
               <v-alert color="success" icon="$success" title="Data Links Submitted" :text="result"
                 v-if="checkError.type == null && result && !progress.running"></v-alert>
             </v-fade-transition>
 
-            <v-col cols="12" class="text-center mt-8" v-if="!hideSubmission">
+            <v-col cols="12" class="text-center mt-8">
               <v-btn type="submit" @click="submitForm"> Submit </v-btn>
             </v-col>
           </template>
@@ -92,37 +91,29 @@ export default defineComponent({
   data() {
     return {
       namespace: '',
-      file: null as File | null,
+      csv: null as File | null,
       readme: null as File | null,
       checkError: {} as CheckError,
       result: '',
       progress: { running: false, action: '' },
       crawlErrors: [] as ValidationReport['crawlErrors'],
-      hideSubmission: false,
       existingNamespaces: [] as string[],
     }
   },
   computed: {
     hideNext() {
-      return this.checkError.type === 'Issues Checking CSV' || this.progress.running
+      return this.checkError.type === 'Issues Checking CSV' || this.progress.running 
     },
   },
 
   methods: {
-    async checkValid() {
-      this.checkError = { type: undefined, text: '' }
-      this.crawlErrors = []
-
-      if (!this.file) {
+    async checkCSV() {
+      this.progress = { running: true, action: 'Validating your CSV data. This may take a minute...' }
+      
+      if (!this.csv) {
         return
       }
-      this.hideSubmission = true
-
-      this.progress = {
-        running: true,
-        action: 'Validating your CSV data. This may take a minute...'
-      }
-      const { valid, errorSummary, crawlErrors } = await validGeoconnexCSV(this.file)
+      const { valid, errorSummary, crawlErrors } = await validGeoconnexCSV(this.csv)
 
       if (!valid) {
         if (this.crawlErrors !== undefined) {
@@ -133,7 +124,7 @@ export default defineComponent({
             text: errorSummary as string,
             level: 'warning'
           }
-          return
+          return false
         }
       } else {
         this.checkError = {
@@ -142,34 +133,45 @@ export default defineComponent({
           level: 'info'
         }
         this.progress = { running: false, action: '' }
-        this.hideSubmission = false
+        return true
       }
     },
+
+    async valid() {
+
+      if (!this.csv) {
+        return false
+      }
+
+      this.progress = {
+        running: true,
+        action: 'Validating your CSV data. This may take a minute...'
+      }
+
+    },
     overrideError() {
-      this.hideSubmission = false
       this.checkError = { type: undefined, text: '' }
       this.crawlErrors = []
     },
-    setMetadata(metadata : { readme: File | null, namespace: string }) {
+    setMetadata(metadata: { readme: File | null, namespace: string }) {
       const { readme, namespace } = metadata
       this.namespace = namespace
       this.readme = readme
     },
 
     async submitForm() {
-      // Reset form state before submitting
-      this.checkError = { type: undefined, text: '' }
+
       this.result = ''
       this.progress = { running: false, action: '' }
 
-      if (!this.file) {
+      if (!this.csv) {
         this.checkError = { type: 'Error submitting data', text: 'File is required' }
         return
       }
 
       try {
         this.progress = { running: true, action: 'Uploading your data to the Geoconnex registry.' }
-        const result = await submitData(this.namespace, this.file, this.readme || undefined)
+        const result = await submitData(this.namespace, this.csv, this.readme || undefined)
         this.result = result
       } catch (error) {
         this.checkError = {
@@ -184,3 +186,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+
+.ignoreButton {
+  background-color: rgb(var(--v-theme-secondary));
+}
+</style>
