@@ -12,7 +12,7 @@
     locations within a namespace. The features you link to must already exist online and have their
     own web page.
   </p>
-  <v-alert color="info" class="mb-2" icon="$info" variant="tonal" title="Additional details ">
+  <v-alert color="info" class="mb-2" icon="$info" variant="flat" title="Additional details ">
     For more details, the
     <a href="https://docs.geoconnex.us/">geoconnex documentation</a> provides a general overview of
     geoconnex and a tutorial for how to:
@@ -37,3 +37,12 @@
     </ol>
   </v-alert>
 </template>
+
+<style scoped>
+
+/* remove highlighting for visited link */
+a:visited {
+  color: inherit;
+}
+
+</style>

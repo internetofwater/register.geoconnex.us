@@ -1,10 +1,16 @@
-import { validGeoconnexCSV, targetsAreAlive } from './helpers'
+import { validGeoconnexCSV, targetsAreAlive, fetchAllNamespaces } from './helpers'
 import { test, expect } from 'vitest'
 import { CSVError } from './types'
 
 // Node imports for testing
 const fs = require('fs')
 const path = require('path')
+
+test('Get namespaces', async () => {
+  const namespaces = await fetchAllNamespaces()
+  expect(namespaces.includes('epa')).toBe(true)
+  expect(namespaces.includes("usbr")).toBe(true)
+})
 
 function getTestFile(fileName: string) {
   // Papaparse requires a File object as it would be presented in the DOM, but in node we can't read using

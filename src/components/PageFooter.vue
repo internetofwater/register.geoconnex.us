@@ -1,35 +1,41 @@
 <template>
-  <div class="footer">
-    <a href="https://internetofwater.org" class="logo-link">
-      <img
-        src="@/assets/logo-iow.png"
-        alt="Geoconnex Logo"
-        title="internetofwater.org"
-        class="logo-img"
-      />
-    </a>
-    <a href="https://cgsearth.org" class="logo-link">
-      <img src="@/assets/logo-cgs.png" alt="Geoconnex Logo" title="cgsearth.org" class="logo-img" />
-    </a>
-  </div>
+  <v-footer class="footer pa-8" width="auto">
+    <div class="logo-container">
+      <a href="https://internetofwater.org" class="logo-link">
+        <img src="@/assets/logo-iow.png" alt="Internet of Water Logo" title="internetofwater.org" class="logo-img" />
+      </a>
+      <a href="https://cgsearth.org" class="logo-link">
+        <img src="@/assets/logo-cgs.png" alt="CGS Earth Logo" title="cgsearth.org" class="logo-img" />
+      </a>
+    </div>
+  </v-footer>
 </template>
 
 <style scoped>
 .footer {
-  width: 100%;
-  background-color: #f0f0f0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 10px 20px;
-  margin-top: 40px;
+  background-color: rgba(0, 0, 0, 0);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
+  /* Align items to the bottom */
+  height: 120px;
+  /* Ensure height is consistent */
+}
+
+.logo-container {
+  display: flex;
+  align-items: flex-end;
+  /* Align logos to the bottom of the container */
 }
 
 .logo-img {
   width: 180px;
-  height: auto;
-  /* Maintain aspect ratio */
   padding: 0 16px;
+  -webkit-filter: drop-shadow(1px 1px 0 white) drop-shadow(-1px 1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px -1px 0 white);
+
+  filter: drop-shadow(1px 1px 0 white) drop-shadow(-1px 1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px -1px 0 white);
+
 }
 </style>

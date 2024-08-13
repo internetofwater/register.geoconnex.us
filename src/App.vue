@@ -6,15 +6,25 @@ import '@mdi/font/css/materialdesignicons.css'
 </script>
 
 <template>
-  <PageHeader />
-  <h1>Register Persistant Identifiers for Geoconnex</h1>
-  <UploadForm />
-  <PageFooter />
+  <v-app class="pa-0 ma-0">
+    <PageHeader />
+    <h1 class="text-center">Register Persistent Identifiers for Geoconnex</h1>
+    <UploadForm />
+    <PageFooter />
+  </v-app>
 </template>
 
-<style scoped>
-h1 {
-  text-align: center;
-  color: #1b335f;
+<style>
+/* Default light mode background color */
+body {
+  margin: 0;
+  background-color: white; 
+}
+
+/* Dark mode background color */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212; 
+  }
 }
 </style>

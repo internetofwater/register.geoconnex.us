@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panels class="contribution-button mb-5" v-model="activePanel">
-    <v-expansion-panel title="CSV Formatting Reference" bg-color="#f4f4f9" value="1">
-      <v-expansion-panel-text class="expansion-panel text-1b335f">
+    <v-expansion-panel title="CSV Formatting Reference" value="1">
+      <v-expansion-panel-text class="expansion-panel">
         <v-card-text class="markdown-card-text text-center pa-0 ma-0">
           <br />
           <i class="pa-12"

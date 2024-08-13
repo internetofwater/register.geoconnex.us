@@ -1,108 +1,73 @@
+<!-- eslint-disable vue/valid-v-slot -->
 <script setup lang="ts">
 import URLCheckSummary from '@/components/URLCheckSummary.vue'
-import ReadmeGenerator from '@/components/ReadmeGenerator.vue'
 import CSVReference from '@/components/CSVReference.vue'
 import GeoconnexBackground from '@/components/GeoconnexBackground.vue'
+import MetadataGenerator from '@/components/MetadataGenerator.vue'
+
 </script>
 
 <template>
-  <v-container class="fill-height" fluid>
-    <v-row justify="center">
-      <v-col cols="12" sm="8">
-        <v-stepper
-          :items="[
-            'Step 1: Review Background',
-            'Step 2: Add CSV',
-            'Step 3: Add Metadata',
-            'Step 4: Submit'
-          ]"
-          :hide-actions="hideNext"
-        >
+  <v-container class="fill-width w-66 d-flex align-center justify-center" fluid>
+    <v-row class="justify-center align-center fill-height">
+      <v-col cols="12">
+        <v-stepper :items="[
+          'Step 1: Review Background',
+          'Step 2: Add CSV',
+          'Step 3: Add Metadata',
+          'Step 4: Submit'
+        ]" :hide-actions="hideNext">
           <template v-slot:item.1>
             <GeoconnexBackground />
           </template>
 
           <template v-slot:item.2>
-            <v-col cols="12" class="text-center">
-              <h2 class="text-center">Upload your CSV Mapping</h2>
+            <h2 class="text-center">Upload your CSV Mapping</h2>
 
-              <CSVReference class="mt-4" />
+            <CSVReference class="mt-4" />
 
-              <p class="text-center mx-15 pa-4 font-italic">
-                A namespace is a short name or alias for your organization. It will be created upon
-                submission if it does not already exist. If the namespace already exists, your new
-                CSV file will be added to the existing namespace
-              </p>
 
-              <v-row class="ma-4">
-                <v-text-field
-                  v-model="namespace"
-                  label="Namespace"
-                  hint="Example: usgs"
-                  persistent-hint
-                  variant="outlined"
-                  required
-                ></v-text-field>
+            <v-file-input v-model="file" label="CSV Mapping" accept=".csv" required show-size variant="outlined"
+              @change="checkValid" class="w-50 mx-auto" />
 
-                <v-file-input
-                  v-model="file"
-                  label="CSV Mapping"
-                  accept=".csv"
-                  required
-                  show-size
-                  variant="outlined"
-                  @change="checkValid"
-                />
-              </v-row>
+            <URLCheckSummary :crawlErrors="crawlErrors" :progress="progress" class="mt-4"></URLCheckSummary>
 
-              <URLCheckSummary :crawlErrors="crawlErrors" class="mt-4"></URLCheckSummary>
 
-              <v-btn
-                v-if="error.type === 'Issues Checking CSV'"
-                @click="overrideError"
-                class="mt-6"
-              >
-                Ignore warning and override
-              </v-btn>
-            </v-col>
+            <v-fade-transition class="mt-4">
+              <v-alert :color="checkError.level || 'error'" :icon="`$${checkError.level || 'error'}`"
+                :title="checkError.type" :text="checkError.text" v-if="checkError.type && !progress.running">
+              </v-alert>
+              <v-alert color="success" icon="$success" title="Data Links Submitted" :text="result"
+                v-if="checkError.type == null && result && !progress.running"></v-alert>
+            </v-fade-transition>
+
+
+            <v-btn v-if="checkError.type === 'Issues Checking CSV'" @click="overrideError" class="mt-6 d-flex mx-auto">
+              Ignore warning and override
+            </v-btn>
           </template>
 
           <template v-slot:item.3>
-            <ReadmeGenerator :namespace="namespace" @result="setReadme" />
+            <h2 class="mb-4 text-center">Add Metadata for your CSV Contribution</h2>
 
-            <v-col cols="12" class="text-center">
-              <div class="justify-center" v-if="progress.running">
-                <v-progress-circular indeterminate color="primary"> </v-progress-circular>
-                <br />
-                <br />
-                <p>{{ progress.action }}</p>
-              </div>
-            </v-col>
+            <MetadataGenerator :namespace="namespace" @result="setMetadata" />
+
           </template>
 
           <template v-slot:item.4>
             <h2 class="text-center">Upload your CSV Mapping</h2>
 
             <v-fade-transition class="mt-4">
-              <v-alert
-                :color="error.level || 'error'"
-                :icon="`$${error.level || 'error'}`"
-                :title="error.type"
-                :text="error.text"
-                v-if="error.type && !progress.running"
-              >
+              <v-alert :color="checkError.level || 'error'" :icon="`$${checkError.level || 'error'}`"
+                :title="checkError.type" :text="checkError.text"
+                v-if="checkError.type != 'Checked CSV without errors' && !progress.running">
               </v-alert>
-              <v-alert
-                color="success"
-                icon="$success"
-                title="Data Links Submitted"
-                :text="result"
-                v-if="error.type == null && result && !progress.running"
-              ></v-alert>
+              <v-alert color="success" icon="$success" title="Data Links Submitted" :text="result"
+                v-if="checkError.type == null && result && !progress.running"></v-alert>
             </v-fade-transition>
 
-            <v-col cols="12" class="text-center" v-if="!hideSubmission">
-              <v-btn type="submit" color="#00A087" @click="submitForm"> Submit </v-btn>
+            <v-col cols="12" class="text-center mt-8" v-if="!hideSubmission">
+              <v-btn type="submit" @click="submitForm"> Submit </v-btn>
             </v-col>
           </template>
         </v-stepper>
@@ -117,7 +82,7 @@ import { defineComponent } from 'vue'
 import { validGeoconnexCSV } from '@/lib/helpers'
 import type { ValidationReport } from '@/lib/types'
 
-interface FormError {
+interface CheckError {
   type: 'Issues Checking CSV' | 'Error submitting data' | 'Checked CSV without errors' | null
   text: string
   level?: 'error' | 'warning' | 'info'
@@ -129,21 +94,23 @@ export default defineComponent({
       namespace: '',
       file: null as File | null,
       readme: null as File | null,
-      error: {} as FormError,
+      checkError: {} as CheckError,
       result: '',
       progress: { running: false, action: '' },
       crawlErrors: [] as ValidationReport['crawlErrors'],
-      hideSubmission: false
+      hideSubmission: false,
+      existingNamespaces: [] as string[],
     }
   },
   computed: {
     hideNext() {
-      return this.error.type === 'Issues Checking CSV' || this.progress.running
-    }
+      return this.checkError.type === 'Issues Checking CSV' || this.progress.running
+    },
   },
+
   methods: {
     async checkValid() {
-      this.error = { type: null, text: '' }
+      this.checkError = { type: null, text: '' }
       this.crawlErrors = []
 
       if (!this.file) {
@@ -161,7 +128,7 @@ export default defineComponent({
         if (this.crawlErrors !== undefined) {
           this.crawlErrors = crawlErrors as { url: string; error: string }[]
           this.progress = { running: false, action: '' }
-          this.error = {
+          this.checkError = {
             type: 'Issues Checking CSV',
             text: errorSummary as string,
             level: 'warning'
@@ -169,7 +136,7 @@ export default defineComponent({
           return
         }
       } else {
-        this.error = {
+        this.checkError = {
           type: 'Checked CSV without errors',
           text: 'Note: automated tests do not check regex URLs. If you have these, please validate any complex logic independently.',
           level: 'info'
@@ -180,25 +147,23 @@ export default defineComponent({
     },
     overrideError() {
       this.hideSubmission = false
-      this.error = { type: null, text: '' }
+      this.checkError = { type: null, text: '' }
       this.crawlErrors = []
     },
-    setReadme(readme: File | null) {
+    setMetadata(metadata : { readme: File | null, namespace: string }) {
+      const { readme, namespace } = metadata
+      this.namespace = namespace
       this.readme = readme
     },
 
     async submitForm() {
       // Reset form state before submitting
-      this.error = { type: null, text: '' }
+      this.checkError = { type: null, text: '' }
       this.result = ''
       this.progress = { running: false, action: '' }
 
-      if (!this.namespace) {
-        this.error = { type: 'Error submitting data', text: 'Namespace is required' }
-        return
-      }
       if (!this.file) {
-        this.error = { type: 'Error submitting data', text: 'File is required' }
+        this.checkError = { type: 'Error submitting data', text: 'File is required' }
         return
       }
 
@@ -207,7 +172,7 @@ export default defineComponent({
         const result = await submitData(this.namespace, this.file, this.readme || undefined)
         this.result = result
       } catch (error) {
-        this.error = {
+        this.checkError = {
           type: 'Error submitting data',
           text: error instanceof Error ? error.message : String(error)
         }
@@ -219,21 +184,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.form-container {
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  margin: 0 auto;
-}
-
-h2 {
-  color: #1b335f;
-}
-
-.expansion-panel {
-  background-color: #f4f4f9;
-}
-</style>
