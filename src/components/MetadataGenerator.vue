@@ -17,7 +17,7 @@ import { fetchAllNamespaces } from '@/lib/helpers'
     variant="outlined"
     v-model="namespace"
   />
-  
+
   <v-switch
     class="d-flex justify-center mb-4"
     color="accent"
