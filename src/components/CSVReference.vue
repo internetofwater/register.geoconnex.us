@@ -36,21 +36,7 @@
           </div>
 
           <br />
-          <v-btn
-            class="flex ma-2"
-            target="_blank"
-            append-icon="mdi-open-in-new"
-            href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/iow/demo.csv"
-            >1:1 example</v-btn
-          >
-          <v-btn
-            target="_blank"
-            append-icon="mdi-open-in-new"
-            href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv"
-            >1:N example</v-btn
-          >
-          <br />
-          For more detailed info regarding the format of your CSV, see the
+          For more detailed info regarding the format of your CSV and examples, see the
           <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
             CSV formatting documentation</a
           >
