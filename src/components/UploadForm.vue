@@ -1,211 +1,136 @@
+<!-- eslint-disable vue/valid-v-slot -->
 <script setup lang="ts">
 import URLCheckSummary from '@/components/URLCheckSummary.vue'
+import CSVReference from '@/components/CSVReference.vue'
+import GeoconnexBackground from '@/components/GeoconnexBackground.vue'
+import MetadataGenerator from '@/components/MetadataGenerator.vue'
 </script>
 
 <template>
-  <v-container class="fill-height" fluid>
-    <v-row justify="center">
-      <v-col cols="12" sm="8">
-        <v-form id="uploadForm" @submit.prevent="submitForm" class="form-container">
-          <v-container class="form-content">
-            <v-row>
-              <p class="text-center pa-4">
-                The <a href="https://geoconnex.us">geoconnex.us</a> project provides technical
-                infrastructure and guidance for creating an open, community-contribution model for a
-                knowledge graph linking hydrologic features in the United States, published in
-                accordance with Spatial Data on the Web best practices as an implementation of
-                Internet of Water principles.
-              </p>
-              <p class="text-center pa-4">
-                This tool allows users to create Geoconnex linkages to their own water data. Submit
-                a CSV file to register persistent URL-formatted identifiers for your organization's
-                monitoring locations within a 'namespace' (short name for your organization). The
-                features you link to must already exist online and have their own web page, if this
-                is not true, learn how to do so
-                <a href="https://docs.geoconnex.us/reference/data-formats/jsonld/primer/building"
-                  >here</a
-                >.
-              </p>
-              <v-col cols="12">
-                <v-expansion-panels class="contribution-button mb-5">
-                  <v-expansion-panel title="CSV Formatting Information" bg-color="#f4f4f9">
-                    <v-expansion-panel-text class="expansion-panel text-1b335f">
-                      <v-card-text class="markdown-card-text text-center pa-0 ma-0">
-                        <v-row>
-                          <i class="pa-4"
-                            >Ensure your identifiers are well-documented and all info is up-to-date
-                            to so that Geoconnex administrators can follow up with you if there are
-                            any issues.</i
-                          >
-                        </v-row>
-                        <br />
-                        The 4 columns in your CSV mapping should be: <br />
-                        <code>id target creator description</code>
-                        <br />
-                        <v-btn
-                          class="flex ma-2"
-                          target="_blank"
-                          variant="test"
-                          append-icon="mdi-open-in-new"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/iow/demo.csv"
-                          >1:1 example</v-btn
-                        >
-                        <v-btn
-                          target="_blank"
-                          variant="text"
-                          append-icon="mdi-open-in-new"
-                          href="https://github.com/internetofwater/geoconnex.us/blob/master/namespaces/usgs/monitoring-location/monitoring-location.csv"
-                          >1:N example</v-btn
-                        >
-                        <br />
-                        For more detailed info, see the
-                        <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
-                          CSV formatting documentation</a
-                        >
-                      </v-card-text>
-                    </v-expansion-panel-text>
-                  </v-expansion-panel>
-                </v-expansion-panels>
-                <!-- <v-col cols="12">
-                <v-file-input v-model="readme" label="Readme for Namespace" accept=".md" outlined>
-                </v-file-input> 
-              </v-col> -->
-              </v-col>
-              <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="namespace"
-                  label="Namespace"
-                  hint="Example: usgs"
-                  variant="outlined"
-                  required
-                ></v-text-field> </v-col
-              ><v-col cols="12" md="8">
-                <v-file-input
-                  v-model="file"
-                  label="CSV Mapping"
-                  accept=".csv"
-                  required
-                  show-size
-                  variant="outlined"
-                  @change="checkValid"
-                />
-              </v-col>
-              <v-col cols="12">
-                <v-checkbox
-                  label="I already have a readme file uploaded to my namespace and do not wish to update my contribution info"
-                  v-model="readmeAlreadyUploaded"
-                >
-                </v-checkbox>
+  <v-container class="fill-width w-66 d-flex align-center justify-center" fluid>
+    <v-row class="justify-center align-center fill-height">
+      <v-col cols="12">
+        <v-stepper
+          :items="[
+            'Step 1: Review Background',
+            'Step 2: Add CSV',
+            'Step 3: Add Metadata',
+            'Step 4: Submit'
+          ]"
+          :hide-actions="hideNext"
+        >
+          <template v-slot:item.1>
+            <GeoconnexBackground />
+          </template>
 
-                <div v-if="!readmeAlreadyUploaded">
-                  <div>
-                    <v-card-text class="text-center">
-                      <v-row class="d-flex justify-center">
-                        <h2>Contribution Information</h2>
-                        <!-- <v-icon icon="mdi-information" class="ml-3" color="#1B335F" :onclick="toggleHelp"></v-icon> -->
-                      </v-row>
-                    </v-card-text>
-                  </div>
-                  <v-text-field
-                    v-model="homepage"
-                    label="Homepage for where redirects will point to"
-                    type="url"
-                    required
-                    variant="outlined"
-                    hint="Example: https://waterdata.usgs.gov"
-                    persistent-hint
-                    class="pb-4"
-                  ></v-text-field>
+          <template v-slot:item.2>
+            <h2 class="text-center">Upload your CSV Mapping</h2>
 
-                  <v-textarea
-                    v-model="description"
-                    label="Description of data"
-                    required
-                    variant="outlined"
-                    hint="Example: All monitoring locations used by the USGS Waterdata system"
-                    persistent-hint
-                    class="pb-4"
-                  ></v-textarea>
+            <p class="pa-4 text-center mx-auto w-66">
+              Geoconnex will use your CSV to associate your data resources to unique Geoconnex ids.
+              It will also use the target URL you supply to access each feature for the purpose of
+              constructing the Geoconnex knowledge graph.
+            </p>
 
-                  <v-text-field
-                    v-model="example_pid"
-                    label="Example PID"
-                    required
-                    variant="outlined"
-                    hint="Example: https://geoconnex.us/usgs/monitoring-location/08383500"
-                    persistent-hint
-                    class="pb-4"
-                  ></v-text-field>
+            <CSVReference class="mt-4" />
 
-                  <v-text-field
-                    v-model="example_redirect_target"
-                    label="Example redirect target url"
-                    type="url"
-                    variant="outlined"
-                    hint="Example: https://waterdata.usgs.gov/monitoring-location/08383500"
-                    persistent-hint
-                    class="pb-4"
-                  ></v-text-field>
+            <v-file-input
+              v-model="csv"
+              label="CSV Mapping"
+              accept=".csv"
+              required
+              show-size
+              variant="outlined"
+              @change="checkCSV"
+              class="w-50 mx-auto"
+            />
 
-                  <v-text-field
-                    v-model="contact_name"
-                    label="Contact name"
-                    hint="Example: John Smith"
-                    required
-                    variant="outlined"
-                    class="pb-4"
-                  ></v-text-field>
+            <URLCheckSummary
+              :crawlErrors="crawlErrors"
+              :progress="progress"
+              class="mt-4"
+            ></URLCheckSummary>
 
-                  <v-text-field
-                    v-model="contact_email"
-                    label="Contact email"
-                    append-inner-icon="mdi-email"
-                    required
-                    variant="outlined"
-                    type="email"
-                    hint="Example: user@usgs.gov"
-                  ></v-text-field>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
-          <v-fade-transition>
-            <v-alert
-              :color="error.level || 'error'"
-              :icon="`$${error.level || 'error'}`"
-              :title="error.type"
-              :text="error.text"
-              v-if="error.type && !progress.running"
+            <v-fade-transition class="mx-auto w-66">
+              <v-alert
+                :color="checkError.level || 'error'"
+                :icon="`$${checkError.level || 'error'}`"
+                :title="checkError.type"
+                :text="checkError.text"
+                v-if="checkError.type && !progress.running"
+              >
+              </v-alert>
+              <v-alert
+                color="success"
+                icon="$success"
+                title="Data mapping submitted"
+                :text="result"
+                v-if="checkError.type == null && result && !progress.running"
+              ></v-alert>
+            </v-fade-transition>
+
+            <v-btn
+              v-if="checkError.type === 'Issues Checking CSV' && !progress.running"
+              @click="overrideError"
+              class="mt-6 d-flex mx-auto ignoreButton"
             >
-            </v-alert>
-          </v-fade-transition>
-          <v-fade-transition>
-            <v-alert
-              color="success"
-              icon="$success"
-              title="Data Links Submitted"
-              :text="result"
-              v-if="error.type == null && result && !progress.running"
-            ></v-alert>
-          </v-fade-transition>
-          <v-col cols="12" class="text-center" v-if="!hideSubmission">
-            <v-btn type="submit" color="#00A087"> Submit </v-btn>
-          </v-col>
-          <v-col cols="12" class="text-center">
-            <div class="justify-center" v-if="progress.running">
-              <v-progress-circular indeterminate color="primary"> </v-progress-circular>
-              <br />
-              <br />
-              <p>{{ progress.action }}</p>
-            </div>
-          </v-col>
-          <v-col cols="12" class="text-center">
-            <v-btn v-if="error.type === 'Issues Checking CSV'" @click="overrideError">
               Ignore warning and override
             </v-btn>
-            <URLCheckSummary :crawlErrors="crawlErrors" class="mt-4"></URLCheckSummary>
-          </v-col>
-        </v-form>
+          </template>
+
+          <template v-slot:item.3>
+            <h2 class="mb-4 text-center">Add Metadata for your CSV Contribution</h2>
+
+            <MetadataGenerator :namespace="namespace" @result="setMetadata" />
+          </template>
+
+          <template v-slot:item.4>
+            <h2 class="text-center">Submit your Data Mapping</h2>
+            <p class="text-center mx-auto w-66 pa-4">
+              Your data will be submitted to the
+              <a href="https://github.com/internetofwater/geoconnex.us" target="_blank"
+                >Geoconnex URI registry</a
+              >
+              on GitHub. Once submitted, you will be able to view the request to add your data to
+              Geoconnex.
+            </p>
+
+            <v-col cols="12" class="text-center">
+              <div class="justify-center" v-if="progress.running">
+                <v-progress-circular indeterminate color="primary"> </v-progress-circular>
+                <br />
+                <br />
+                <p>{{ progress.action }}</p>
+              </div>
+            </v-col>
+
+            <v-fade-transition class="mt-4 mx-auto w-66">
+              <v-alert
+                :color="checkError.level || 'error'"
+                :icon="`$${checkError.level || 'error'}`"
+                :title="checkError.type"
+                :text="checkError.text"
+                v-if="
+                  checkError.type != 'Checked CSV without errors' &&
+                  checkError.type &&
+                  !progress.running
+                "
+              >
+              </v-alert>
+              <v-alert
+                color="success"
+                icon="$success"
+                title="Data Submitted"
+                :text="result"
+                v-if="checkError.type == null && result && !progress.running"
+              ></v-alert>
+            </v-fade-transition>
+
+            <v-col cols="12" class="text-center mt-8">
+              <v-btn type="submit" @click="submitForm" class="bg-accent"> Submit </v-btn>
+            </v-col>
+          </template>
+        </v-stepper>
       </v-col>
     </v-row>
   </v-container>
@@ -213,13 +138,12 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
 
 <script lang="ts">
 import { submitData } from '@/lib/upload'
-import { generateReadMe } from '@/lib/helpers'
-import { type MarkdownSection, type ValidationReport } from '@/lib/types'
 import { defineComponent } from 'vue'
 import { validGeoconnexCSV } from '@/lib/helpers'
+import type { ValidationReport } from '@/lib/types'
 
-interface FormError {
-  type: 'Issues Checking CSV' | 'Error Submitting PR' | 'Checked CSV without errors' | null
+interface CheckError {
+  type: 'Issues Checking CSV' | 'Error submitting data' | 'Checked CSV without errors' | undefined
   text: string
   level?: 'error' | 'warning' | 'info'
 }
@@ -228,108 +152,96 @@ export default defineComponent({
   data() {
     return {
       namespace: '',
-      file: null as File | null,
+      csv: null as File | null,
       readme: null as File | null,
-      error: {} as FormError,
+      checkError: {} as CheckError,
       result: '',
-      homepage: '',
-      description: '',
-      example_pid: '',
-      example_redirect_target: '',
-      contact_name: '',
-      contact_email: '',
-      readmeAlreadyUploaded: false,
       progress: { running: false, action: '' },
       crawlErrors: [] as ValidationReport['crawlErrors'],
-      hideSubmission: false
+      existingNamespaces: [] as string[],
+      blockNext: false
     }
   },
-  methods: {
-    async checkValid() {
-      this.error = { type: null, text: '' }
-      this.crawlErrors = []
+  computed: {
+    hideNext() {
+      return (
+        this.checkError.type === 'Issues Checking CSV' || this.progress.running || this.blockNext
+      )
+    }
+  },
 
-      if (!this.file) {
+  methods: {
+    async checkCSV() {
+      this.progress = {
+        running: true,
+        action: 'Validating your CSV data. This may take a minute...'
+      }
+
+      if (!this.csv) {
         return
       }
-      this.hideSubmission = true
+      const { valid, errorSummary, crawlErrors } = await validGeoconnexCSV(this.csv)
+      this.crawlErrors = crawlErrors
+
+      if (!valid) {
+        if (this.crawlErrors !== undefined) {
+          this.progress = { running: false, action: '' }
+          this.checkError = {
+            type: 'Issues Checking CSV',
+            text: errorSummary as string,
+            level: 'warning'
+          }
+          return false
+        }
+      } else {
+        this.checkError = {
+          type: 'Checked CSV without errors',
+          text: 'Note: automated tests do not check regex URLs. If you have these, please validate any complex logic independently.',
+          level: 'info'
+        }
+        this.progress = { running: false, action: '' }
+        return true
+      }
+    },
+
+    async valid() {
+      if (!this.csv) {
+        return false
+      }
 
       this.progress = {
         running: true,
         action: 'Validating your CSV data. This may take a minute...'
       }
-      const { valid, errorSummary, crawlErrors } = await validGeoconnexCSV(this.file)
-
-      if (!valid) {
-        if (this.crawlErrors !== undefined) {
-          this.crawlErrors = crawlErrors as { url: string; error: string }[]
-          this.progress = { running: false, action: '' }
-          this.error = {
-            type: 'Issues Checking CSV',
-            text: errorSummary as string,
-            level: 'warning'
-          }
-          return
-        }
-      }
-      this.error = {
-        type: 'Checked CSV without errors',
-        text: 'Note: automated tests do not check regex URLs. Please validate any complex logic individually.',
-        level: 'info'
-      }
-      this.progress = { running: false, action: '' }
-      this.hideSubmission = false
     },
     overrideError() {
-      this.hideSubmission = false
-      this.error = { type: null, text: '' }
+      this.checkError = { type: undefined, text: '' }
       this.crawlErrors = []
     },
+    setMetadata(metadata: { readme: File | null; namespace: string; blockNext?: boolean }) {
+      const { readme, namespace, blockNext } = metadata
+      this.namespace = namespace
+      this.readme = readme
+      this.blockNext = blockNext || false
+    },
+
     async submitForm() {
-      // Reset form state before submitting
-      this.error = { type: null, text: '' }
+      // reset stored form state at the start of the submission before validating
       this.result = ''
       this.progress = { running: false, action: '' }
 
-      if (!this.namespace) {
-        this.error = { type: 'Error Submitting PR', text: 'Namespace is required' }
-        return
-      }
-      if (!this.file) {
-        this.error = { type: 'Error Submitting PR', text: 'File is required' }
+      if (!this.csv) {
+        this.checkError = { type: 'Error submitting data', text: 'CSV file is required' }
         return
       }
 
-      // Make sure all markdown fields are filled
-      if (!this.readmeAlreadyUploaded) {
-        const requiredReadmeFields: MarkdownSection[] = [
-          { body: this.homepage, sectionName: 'Homepage' },
-          { body: this.description, sectionName: 'Description' },
-          { body: this.example_pid, sectionName: 'Example PID' },
-          { body: this.example_redirect_target, sectionName: 'Example redirect target URL' },
-          { body: this.contact_name, sectionName: 'Contact name' },
-          { body: this.contact_email, sectionName: 'Contact email' }
-        ]
-
-        for (const field of requiredReadmeFields) {
-          if (!field.body) {
-            this.error = { type: 'Error Submitting PR', text: `${field.sectionName} is required` }
-            return
-          }
-        }
-
-        const generatedReadme = generateReadMe(this.namespace, requiredReadmeFields)
-        this.readme = new File([generatedReadme], 'README.md', { type: 'text/plain' })
-      }
-
-      // submit PR to Geoconnex Github repo
       try {
         this.progress = { running: true, action: 'Uploading your data to the Geoconnex registry.' }
-        const result = await submitData(this.namespace, this.file, this.readme || undefined)
+        const result = await submitData(this.namespace, this.csv, this.readme || undefined)
         this.result = result
       } catch (error) {
-        this.error = {
-          type: 'Error Submitting PR',
+        this.checkError = {
+          type: 'Error submitting data',
           text: error instanceof Error ? error.message : String(error)
         }
         this.result = ''
@@ -342,19 +254,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.form-container {
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  margin: 0 auto;
-}
-
-h2 {
-  color: #1b335f;
-}
-
-.expansion-panel {
-  background-color: #f4f4f9;
+.ignoreButton {
+  background-color: rgb(var(--v-theme-secondary));
 }
 </style>

@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "@types/papaparse": "^5.3.14",
-    "marked": "^13.0.1",
     "papaparse": "^5.4.1",
+    "pinia": "^2.2.1",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",
     "vuetify": "^3.6.10"
