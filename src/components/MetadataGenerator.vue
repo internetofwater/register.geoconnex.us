@@ -4,14 +4,14 @@ import { fetchAllNamespaces } from '@/lib/helpers'
 
 <template>
 
-  <p class="text-center mx-15 pa-4 font-italic">
+  <p class="text-center pa-6 font-italic w-66 mx-auto">
     A namespace is a short name or alias for your organization. It will be created upon
     submission if it does not already exist. If the namespace already exists, your new
     CSV file will be added to the existing namespace
   </p>
 
-  <v-combobox label="Pick or create a new namespace" hint="Example: usgs" class="w-66 mx-auto"
-    persistent-hint required :items="existingNamespaces" v-model="namespace"></v-combobox>
+  <v-combobox label="Pick your organization if it exists, or create a new namespace" class="w-66 mx-auto" required
+    :items="existingNamespaces" v-model="namespace"></v-combobox>
   <v-checkbox class="d-flex justify-center mb-4"
     label="I already have a readme file uploaded to my namespace and do not wish to update my contribution info"
     v-model="readmeAlreadyUploaded">
@@ -41,7 +41,7 @@ import { fetchAllNamespaces } from '@/lib/helpers'
   </div>
 
   <v-alert type="error" class="w-50 mx-auto" v-if="!valid" icon="mdi-alert">
-    {{ error }} 
+    {{ error }}
   </v-alert>
 
 </template>
@@ -77,6 +77,11 @@ export default defineComponent({
     valid() {
       if (this.namespace.length == 0) {
         this.error = 'Namespace is required'
+        this.$emit('result', {
+          readme: null,
+          namespace: this.namespace,
+          blockNext: true
+        })
         return false
       }
 
@@ -93,6 +98,11 @@ export default defineComponent({
         for (const field of requiredReadmeFields) {
           if (field.body.length == 0) {
             this.error = `${field.sectionName} is required`
+            this.$emit('result', {
+              readme: null,
+              namespace: this.namespace,
+              blockNext: true
+            })
             return false
           }
         }
@@ -102,16 +112,21 @@ export default defineComponent({
         this.error = ''
         this.$emit('result', {
           readme: this.file,
-          namespace: this.namespace
+          namespace: this.namespace,
+          blockNext: false
         })
       }
-      else{
+      // If the user didn't add a readme, just return the namespace
+      else {
         this.$emit('result', {
           readme: null,
-          namespace: this.namespace
+          namespace: this.namespace,
+          blockNext: false
         })
       }
 
+      // after handling all emit logic, make sure the form is not in an invalid state
+      // since we didn't return early, we know it is true
       this.error = ''
       return true
     }

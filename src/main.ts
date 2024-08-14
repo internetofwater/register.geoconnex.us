@@ -14,8 +14,10 @@ const buttonColor = "#00A087"
 const customLightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    primary: colors.grey.lighten4,
-    secondary: "#e5e9f0",
+    primary: colors.grey.lighten4, // lightest grey
+    secondary: "#e5e9f0", // light grey
+    accent: buttonColor, // turquoise
+    header: "#1b335f" // dark blue for geoconnex
   },
 }
 
@@ -37,7 +39,7 @@ const vuetify = createVuetify({
     defaultTheme: 'light',
     themes: {
       dark: customDarkTheme,
-      light: customLightTheme
+      light: customLightTheme,
     }
   }
 })

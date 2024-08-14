@@ -1,5 +1,5 @@
 <template>
-  <div v-if="crawlErrors && crawlErrors.length > 0">
+  <div v-if="crawlErrors && crawlErrors.length > 0 && !progress.running">
     <v-data-table :items="crawlErrors"> </v-data-table>
   </div>
 

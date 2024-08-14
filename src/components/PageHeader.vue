@@ -5,13 +5,17 @@
         <img src="@/assets/logo-geoconnex.png" alt="Geoconnex Logo" title="geoconnex.us" class="logo-geoconnex" />
       </a>
     </div>
-    <v-icon @click="toggleTheme" icon="mdi-theme-light-dark" class="theme-toggle-icon"></v-icon>
+
+    <!-- TODO: Dark mode is implemented by the icons in the footer do not look good with it
+        work for future sprint 
+    -->
+    <!-- <v-icon @click="toggleTheme" icon="mdi-theme-light-dark" class="theme-toggle-icon"></v-icon> -->
   </div>
 
 </template>
 
 
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { useTheme } from 'vuetify'
 
 const theme = useTheme()
@@ -19,7 +23,7 @@ const theme = useTheme()
 function toggleTheme() {
   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
 }
-</script>
+</script> -->
 
 
 <style scoped>

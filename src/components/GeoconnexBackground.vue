@@ -1,4 +1,6 @@
 <template>
+              <h2 class="text-center">Geoconnex Background Info </h2>
+
   <p class="text-center pa-4">
     The <a href="https://geoconnex.us">geoconnex.us</a> project provides technical infrastructure
     and guidance for creating an open, community-contribution model for a knowledge graph linking

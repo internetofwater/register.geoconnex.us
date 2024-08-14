@@ -24,11 +24,16 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
           <template v-slot:item.2>
             <h2 class="text-center">Upload your CSV Mapping</h2>
 
+            <p class=" pa-4 text-center mx-auto w-66">
+               Geoconnex will use your CSV to map your data resources Geoconnex ids. It will use the target URL you supply to access each feature for the purpose of constructing the Geoconnex knowledge graph. 
+          </p>
+
             <CSVReference class="mt-4" />
 
 
             <v-file-input v-model="csv" label="CSV Mapping" accept=".csv" required show-size variant="outlined"
               @change="checkCSV" class="w-50 mx-auto" />
+
 
             <URLCheckSummary :crawlErrors="crawlErrors" :progress="progress" class="mt-4"></URLCheckSummary>
 
@@ -36,12 +41,13 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
               <v-alert :color="checkError.level || 'error'" :icon="`$${checkError.level || 'error'}`"
                 :title="checkError.type" :text="checkError.text" v-if="checkError.type && !progress.running">
               </v-alert>
-              <v-alert color="success" icon="$success" title="Data Links Submitted" :text="result"
+              <v-alert color="success" icon="$success" title="Data mapping submitted" :text="result"
                 v-if="checkError.type == null && result && !progress.running"></v-alert>
             </v-fade-transition>
 
 
-            <v-btn v-if="checkError.type === 'Issues Checking CSV'" @click="overrideError" class="mt-6 d-flex mx-auto ignoreButton">
+            <v-btn v-if="checkError.type === 'Issues Checking CSV' && !progress.running" @click="overrideError"
+              class="mt-6 d-flex mx-auto ignoreButton">
               Ignore warning and override
             </v-btn>
           </template>
@@ -54,7 +60,11 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
           </template>
 
           <template v-slot:item.4>
-            <h2 class="text-center">Upload your CSV Mapping</h2>
+            <h2 class="text-center">Submit your Data Mapping</h2>
+            <p class="text-center mx-auto w-66 pa-4">
+              Your data will be submitted to the <a href="https://github.com/internetofwater/geoconnex.us"
+                target="_blank">Geoconnex URI registry</a> on GitHub. Once submitted, you will be able to view the request to add your data to Geoconnex.
+            </p>
 
             <v-col cols="12" class="text-center">
               <div class="justify-center" v-if="progress.running">
@@ -70,12 +80,12 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
                 :title="checkError.type" :text="checkError.text"
                 v-if="checkError.type != 'Checked CSV without errors' && checkError.type && !progress.running">
               </v-alert>
-              <v-alert color="success" icon="$success" title="Data Links Submitted" :text="result"
+              <v-alert color="success" icon="$success" title="Data Submitted" :text="result"
                 v-if="checkError.type == null && result && !progress.running"></v-alert>
             </v-fade-transition>
 
             <v-col cols="12" class="text-center mt-8">
-              <v-btn type="submit" @click="submitForm"> Submit </v-btn>
+              <v-btn type="submit" @click="submitForm" class="bg-accent"> Submit </v-btn>
             </v-col>
           </template>
         </v-stepper>
@@ -107,26 +117,27 @@ export default defineComponent({
       progress: { running: false, action: '' },
       crawlErrors: [] as ValidationReport['crawlErrors'],
       existingNamespaces: [] as string[],
+      blockNext: false
     }
   },
   computed: {
     hideNext() {
-      return this.checkError.type === 'Issues Checking CSV' || this.progress.running 
+      return this.checkError.type === 'Issues Checking CSV' || this.progress.running || this.blockNext
     },
   },
 
   methods: {
     async checkCSV() {
       this.progress = { running: true, action: 'Validating your CSV data. This may take a minute...' }
-      
+
       if (!this.csv) {
         return
       }
       const { valid, errorSummary, crawlErrors } = await validGeoconnexCSV(this.csv)
+      this.crawlErrors = crawlErrors
 
       if (!valid) {
         if (this.crawlErrors !== undefined) {
-          this.crawlErrors = crawlErrors as { url: string; error: string }[]
           this.progress = { running: false, action: '' }
           this.checkError = {
             type: 'Issues Checking CSV',
@@ -162,19 +173,22 @@ export default defineComponent({
       this.checkError = { type: undefined, text: '' }
       this.crawlErrors = []
     },
-    setMetadata(metadata: { readme: File | null, namespace: string }) {
-      const { readme, namespace } = metadata
+    setMetadata(metadata: { readme: File | null, namespace: string, blockNext?: boolean }) {
+      const { readme, namespace, blockNext } = metadata
       this.namespace = namespace
       this.readme = readme
+      this.blockNext = blockNext || false
     },
+
 
     async submitForm() {
 
+      // reset stored form state at the start of the submission before validating
       this.result = ''
       this.progress = { running: false, action: '' }
 
       if (!this.csv) {
-        this.checkError = { type: 'Error submitting data', text: 'File is required' }
+        this.checkError = { type: 'Error submitting data', text: 'CSV file is required' }
         return
       }
 
@@ -197,7 +211,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .ignoreButton {
   background-color: rgb(var(--v-theme-secondary));
 }
