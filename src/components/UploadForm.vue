@@ -13,17 +13,24 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
         <v-stepper
           :items="[
             'Step 1: Review Background',
-            'Step 2: Add CSV',
-            'Step 3: Add Metadata',
+            'Step 2: Add Metadata',
+            'Step 3: Add CSV',
             'Step 4: Submit'
           ]"
           :hide-actions="hideNext"
+          color="header"
         >
           <template v-slot:item.1>
             <GeoconnexBackground />
           </template>
 
           <template v-slot:item.2>
+            <h2 class="mb-4 text-center">Add Metadata for your CSV Contribution</h2>
+
+            <MetadataGenerator :namespace="namespace" @result="setMetadata" />
+          </template>
+
+          <template v-slot:item.3>
             <h2 class="text-center">Upload your CSV Mapping</h2>
 
             <p class="pa-4 text-center mx-auto w-66">
@@ -31,8 +38,6 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
               It will also use the target URL you supply to access each feature for the purpose of
               constructing the Geoconnex knowledge graph.
             </p>
-
-            <CSVReference class="mt-4" />
 
             <v-file-input
               v-model="csv"
@@ -44,6 +49,8 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
               @change="checkCSV"
               class="w-50 mx-auto"
             />
+
+            <CSVReference class="mt-4" />
 
             <URLCheckSummary
               :crawlErrors="crawlErrors"
@@ -76,12 +83,6 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
             >
               Ignore warning and override
             </v-btn>
-          </template>
-
-          <template v-slot:item.3>
-            <h2 class="mb-4 text-center">Add Metadata for your CSV Contribution</h2>
-
-            <MetadataGenerator :namespace="namespace" @result="setMetadata" />
           </template>
 
           <template v-slot:item.4>
