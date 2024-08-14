@@ -79,7 +79,7 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
             <v-btn
               v-if="checkError.type === 'Issues Checking CSV' && !progress.running"
               @click="overrideError"
-              class="mt-6 d-flex mx-auto ignoreButton"
+              class="my-6 d-flex mx-auto ignoreButton"
             >
               Ignore warning and override
             </v-btn>
