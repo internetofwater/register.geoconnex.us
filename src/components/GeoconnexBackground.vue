@@ -26,8 +26,7 @@
     geoconnex and a tutorial for how to:
     <ol>
       <li>
-        1.
-        <a href="https://docs.geoconnex.us/contributing/step-1/idscheme">Prepare your data</a>
+        1. <a href="https://docs.geoconnex.us/contributing/step-1/idscheme">Prepare your data</a>
         with the proper metadata context
       </li>
       <li>
@@ -36,8 +35,7 @@
         that can be linked to as the "target" column in your uploaded CSV
       </li>
       <li>
-        3.
-        <a href="https://docs.geoconnex.us/contributing/step-3/minting">Submit your CSV data</a>,
+        3. <a href="https://docs.geoconnex.us/contributing/step-3/minting">Submit your CSV data</a>,
         either here or Github, after checking it is
         <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
           properly formatted</a
