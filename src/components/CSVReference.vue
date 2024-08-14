@@ -36,7 +36,7 @@
           </div>
 
           <br />
-          For more detailed info regarding the format of your CSV, see the
+          For more detailed info regarding the format of your CSV and examples, see the
           <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
             CSV formatting documentation</a
           >
