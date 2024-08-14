@@ -14,6 +14,7 @@ import { fetchAllNamespaces } from '@/lib/helpers'
     class="w-66 mx-auto"
     required
     :items="existingNamespaces"
+    variant="outlined"
     v-model="namespace"
   ></v-combobox>
   <v-checkbox
