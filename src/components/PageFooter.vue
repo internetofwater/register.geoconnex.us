@@ -2,15 +2,24 @@
   <v-footer class="footer pa-8" width="auto">
     <div class="logo-container">
       <a href="https://internetofwater.org" class="logo-link">
-        <img src="@/assets/logo-iow.png" alt="Internet of Water Logo" title="internetofwater.org" class="logo-img" />
+        <img
+          src="@/assets/logo-iow.png"
+          alt="Internet of Water Logo"
+          title="internetofwater.org"
+          class="logo-img"
+        />
       </a>
       <a href="https://cgsearth.org" class="logo-link">
-        <img src="@/assets/logo-cgs.png" alt="CGS Earth Logo" title="cgsearth.org" class="logo-img" />
+        <img
+          src="@/assets/logo-cgs.png"
+          alt="CGS Earth Logo"
+          title="cgsearth.org"
+          class="logo-img"
+        />
       </a>
     </div>
   </v-footer>
 </template>
-
 
 <style scoped>
 .footer {
@@ -33,7 +42,5 @@
 .logo-img {
   width: 180px;
   padding: 0 16px;
-
 }
-
 </style>

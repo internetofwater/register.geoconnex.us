@@ -1,27 +1,31 @@
 import Papa from 'papaparse'
-import { CSVError, type MarkdownSection, type ValidationReport, type namespaceResult } from './types'
+import {
+  CSVError,
+  type MarkdownSection,
+  type ValidationReport,
+  type namespaceResult
+} from './types'
 
 export async function fetchAllNamespaces(): Promise<string[]> {
-  const api = "https://api.github.com/repos/internetofwater/geoconnex.us/contents/namespaces?ref=master"
+  const api =
+    'https://api.github.com/repos/internetofwater/geoconnex.us/contents/namespaces?ref=master'
 
   const response = await fetch(api)
   if (!response.ok) {
     throw new Error(`HTTP error! Status: ${response.status}`)
   }
 
-
   const data: namespaceResult[] = await response.json()
   const namespaces = []
 
   for (const namespace of data) {
-    if (namespace.type === "dir") {
+    if (namespace.type === 'dir') {
       namespaces.push(namespace.name)
     }
   }
 
   return namespaces
 }
-
 
 export async function fetchMarkdownContent(url: string): Promise<string> {
   const response = await fetch(url)

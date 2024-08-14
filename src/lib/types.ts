@@ -37,5 +37,5 @@ export type namespaceResult = {
   html_url: string
   git_url: string
   download_url: string
-  type: "dir" | "file"
+  type: 'dir' | 'file'
 }

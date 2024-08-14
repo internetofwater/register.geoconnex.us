@@ -9,7 +9,7 @@ const path = require('path')
 test('Get namespaces', async () => {
   const namespaces = await fetchAllNamespaces()
   expect(namespaces.includes('epa')).toBe(true)
-  expect(namespaces.includes("usbr")).toBe(true)
+  expect(namespaces.includes('usbr')).toBe(true)
 })
 
 function getTestFile(fileName: string) {

@@ -4,19 +4,21 @@ import URLCheckSummary from '@/components/URLCheckSummary.vue'
 import CSVReference from '@/components/CSVReference.vue'
 import GeoconnexBackground from '@/components/GeoconnexBackground.vue'
 import MetadataGenerator from '@/components/MetadataGenerator.vue'
-
 </script>
 
 <template>
   <v-container class="fill-width w-66 d-flex align-center justify-center" fluid>
     <v-row class="justify-center align-center fill-height">
       <v-col cols="12">
-        <v-stepper :items="[
-          'Step 1: Review Background',
-          'Step 2: Add CSV',
-          'Step 3: Add Metadata',
-          'Step 4: Submit'
-        ]" :hide-actions="hideNext">
+        <v-stepper
+          :items="[
+            'Step 1: Review Background',
+            'Step 2: Add CSV',
+            'Step 3: Add Metadata',
+            'Step 4: Submit'
+          ]"
+          :hide-actions="hideNext"
+        >
           <template v-slot:item.1>
             <GeoconnexBackground />
           </template>
@@ -24,30 +26,54 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
           <template v-slot:item.2>
             <h2 class="text-center">Upload your CSV Mapping</h2>
 
-            <p class=" pa-4 text-center mx-auto w-66">
-               Geoconnex will use your CSV to map your data resources Geoconnex ids. It will use the target URL you supply to access each feature for the purpose of constructing the Geoconnex knowledge graph. 
-          </p>
+            <p class="pa-4 text-center mx-auto w-66">
+              Geoconnex will use your CSV to map your data resources Geoconnex ids. It will use the
+              target URL you supply to access each feature for the purpose of constructing the
+              Geoconnex knowledge graph.
+            </p>
 
             <CSVReference class="mt-4" />
 
+            <v-file-input
+              v-model="csv"
+              label="CSV Mapping"
+              accept=".csv"
+              required
+              show-size
+              variant="outlined"
+              @change="checkCSV"
+              class="w-50 mx-auto"
+            />
 
-            <v-file-input v-model="csv" label="CSV Mapping" accept=".csv" required show-size variant="outlined"
-              @change="checkCSV" class="w-50 mx-auto" />
-
-
-            <URLCheckSummary :crawlErrors="crawlErrors" :progress="progress" class="mt-4"></URLCheckSummary>
+            <URLCheckSummary
+              :crawlErrors="crawlErrors"
+              :progress="progress"
+              class="mt-4"
+            ></URLCheckSummary>
 
             <v-fade-transition class="mx-auto w-66">
-              <v-alert :color="checkError.level || 'error'" :icon="`$${checkError.level || 'error'}`"
-                :title="checkError.type" :text="checkError.text" v-if="checkError.type && !progress.running">
+              <v-alert
+                :color="checkError.level || 'error'"
+                :icon="`$${checkError.level || 'error'}`"
+                :title="checkError.type"
+                :text="checkError.text"
+                v-if="checkError.type && !progress.running"
+              >
               </v-alert>
-              <v-alert color="success" icon="$success" title="Data mapping submitted" :text="result"
-                v-if="checkError.type == null && result && !progress.running"></v-alert>
+              <v-alert
+                color="success"
+                icon="$success"
+                title="Data mapping submitted"
+                :text="result"
+                v-if="checkError.type == null && result && !progress.running"
+              ></v-alert>
             </v-fade-transition>
 
-
-            <v-btn v-if="checkError.type === 'Issues Checking CSV' && !progress.running" @click="overrideError"
-              class="mt-6 d-flex mx-auto ignoreButton">
+            <v-btn
+              v-if="checkError.type === 'Issues Checking CSV' && !progress.running"
+              @click="overrideError"
+              class="mt-6 d-flex mx-auto ignoreButton"
+            >
               Ignore warning and override
             </v-btn>
           </template>
@@ -56,14 +82,17 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
             <h2 class="mb-4 text-center">Add Metadata for your CSV Contribution</h2>
 
             <MetadataGenerator :namespace="namespace" @result="setMetadata" />
-
           </template>
 
           <template v-slot:item.4>
             <h2 class="text-center">Submit your Data Mapping</h2>
             <p class="text-center mx-auto w-66 pa-4">
-              Your data will be submitted to the <a href="https://github.com/internetofwater/geoconnex.us"
-                target="_blank">Geoconnex URI registry</a> on GitHub. Once submitted, you will be able to view the request to add your data to Geoconnex.
+              Your data will be submitted to the
+              <a href="https://github.com/internetofwater/geoconnex.us" target="_blank"
+                >Geoconnex URI registry</a
+              >
+              on GitHub. Once submitted, you will be able to view the request to add your data to
+              Geoconnex.
             </p>
 
             <v-col cols="12" class="text-center">
@@ -76,12 +105,25 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
             </v-col>
 
             <v-fade-transition class="mt-4 mx-auto w-66">
-              <v-alert :color="checkError.level || 'error'" :icon="`$${checkError.level || 'error'}`"
-                :title="checkError.type" :text="checkError.text"
-                v-if="checkError.type != 'Checked CSV without errors' && checkError.type && !progress.running">
+              <v-alert
+                :color="checkError.level || 'error'"
+                :icon="`$${checkError.level || 'error'}`"
+                :title="checkError.type"
+                :text="checkError.text"
+                v-if="
+                  checkError.type != 'Checked CSV without errors' &&
+                  checkError.type &&
+                  !progress.running
+                "
+              >
               </v-alert>
-              <v-alert color="success" icon="$success" title="Data Submitted" :text="result"
-                v-if="checkError.type == null && result && !progress.running"></v-alert>
+              <v-alert
+                color="success"
+                icon="$success"
+                title="Data Submitted"
+                :text="result"
+                v-if="checkError.type == null && result && !progress.running"
+              ></v-alert>
             </v-fade-transition>
 
             <v-col cols="12" class="text-center mt-8">
@@ -122,13 +164,18 @@ export default defineComponent({
   },
   computed: {
     hideNext() {
-      return this.checkError.type === 'Issues Checking CSV' || this.progress.running || this.blockNext
-    },
+      return (
+        this.checkError.type === 'Issues Checking CSV' || this.progress.running || this.blockNext
+      )
+    }
   },
 
   methods: {
     async checkCSV() {
-      this.progress = { running: true, action: 'Validating your CSV data. This may take a minute...' }
+      this.progress = {
+        running: true,
+        action: 'Validating your CSV data. This may take a minute...'
+      }
 
       if (!this.csv) {
         return
@@ -158,7 +205,6 @@ export default defineComponent({
     },
 
     async valid() {
-
       if (!this.csv) {
         return false
       }
@@ -167,22 +213,19 @@ export default defineComponent({
         running: true,
         action: 'Validating your CSV data. This may take a minute...'
       }
-
     },
     overrideError() {
       this.checkError = { type: undefined, text: '' }
       this.crawlErrors = []
     },
-    setMetadata(metadata: { readme: File | null, namespace: string, blockNext?: boolean }) {
+    setMetadata(metadata: { readme: File | null; namespace: string; blockNext?: boolean }) {
       const { readme, namespace, blockNext } = metadata
       this.namespace = namespace
       this.readme = readme
       this.blockNext = blockNext || false
     },
 
-
     async submitForm() {
-
       // reset stored form state at the start of the submission before validating
       this.result = ''
       this.progress = { running: false, action: '' }

@@ -21,8 +21,8 @@ body {
   padding: 0;
 }
 
-h1, h2 {
+h1,
+h2 {
   color: #1b335f;
 }
-
 </style>

@@ -2,7 +2,12 @@
   <div class="header pa-6 mb-4">
     <div class="logo-container">
       <a href="https://geoconnex.us">
-        <img src="@/assets/logo-geoconnex.png" alt="Geoconnex Logo" title="geoconnex.us" class="logo-geoconnex" />
+        <img
+          src="@/assets/logo-geoconnex.png"
+          alt="Geoconnex Logo"
+          title="geoconnex.us"
+          class="logo-geoconnex"
+        />
       </a>
     </div>
 
@@ -11,9 +16,7 @@
     -->
     <!-- <v-icon @click="toggleTheme" icon="mdi-theme-light-dark" class="theme-toggle-icon"></v-icon> -->
   </div>
-
 </template>
-
 
 <!-- <script setup lang="ts">
 import { useTheme } from 'vuetify'
@@ -24,7 +27,6 @@ function toggleTheme() {
   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
 }
 </script> -->
-
 
 <style scoped>
 .header {
@@ -63,9 +65,10 @@ function toggleTheme() {
 }
 
 .logo-geoconnex {
-  -webkit-filter: drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.594)) drop-shadow(-1px 1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px -1px 0 white);
+  -webkit-filter: drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.594)) drop-shadow(-1px 1px 0 white)
+    drop-shadow(1px -1px 0 white) drop-shadow(-1px -1px 0 white);
 
-  filter: drop-shadow(1px 1px 0 white) drop-shadow(-1px 1px 0.29 white) drop-shadow(1px -1px 0.29 white) drop-shadow(-1px -1px 0.29 white);
-
+  filter: drop-shadow(1px 1px 0 white) drop-shadow(-1px 1px 0.29 white)
+    drop-shadow(1px -1px 0.29 white) drop-shadow(-1px -1px 0.29 white);
 }
 </style>

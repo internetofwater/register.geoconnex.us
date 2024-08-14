@@ -3,47 +3,91 @@ import { fetchAllNamespaces } from '@/lib/helpers'
 </script>
 
 <template>
-
   <p class="text-center pa-6 font-italic w-66 mx-auto">
-    A namespace is a short name or alias for your organization. It will be created upon
-    submission if it does not already exist. If the namespace already exists, your new
-    CSV file will be added to the existing namespace
+    A namespace is a short name or alias for your organization. It will be created upon submission
+    if it does not already exist. If the namespace already exists, your new CSV file will be added
+    to the existing namespace
   </p>
 
-  <v-combobox label="Pick your organization if it exists, or create a new namespace" class="w-66 mx-auto" required
-    :items="existingNamespaces" v-model="namespace"></v-combobox>
-  <v-checkbox class="d-flex justify-center mb-4"
+  <v-combobox
+    label="Pick your organization if it exists, or create a new namespace"
+    class="w-66 mx-auto"
+    required
+    :items="existingNamespaces"
+    v-model="namespace"
+  ></v-combobox>
+  <v-checkbox
+    class="d-flex justify-center mb-4"
     label="I already have a readme file uploaded to my namespace and do not wish to update my contribution info"
-    v-model="readmeAlreadyUploaded">
+    v-model="readmeAlreadyUploaded"
+  >
   </v-checkbox>
 
   <div v-if="!readmeAlreadyUploaded">
-    <v-text-field v-model="homepage" label="Homepage for where redirects will point to" type="url" required
-      variant="outlined" hint="Example: https://waterdata.usgs.gov" persistent-hint class="pb-4"></v-text-field>
+    <v-text-field
+      v-model="homepage"
+      label="Homepage for where redirects will point to"
+      type="url"
+      required
+      variant="outlined"
+      hint="Example: https://waterdata.usgs.gov"
+      persistent-hint
+      class="pb-4"
+    ></v-text-field>
 
-    <v-textarea v-model="description" label="Description of data" required variant="outlined"
-      hint="Example: All monitoring locations used by the USGS Waterdata system" persistent-hint
-      class="pb-4"></v-textarea>
+    <v-textarea
+      v-model="description"
+      label="Description of data"
+      required
+      variant="outlined"
+      hint="Example: All monitoring locations used by the USGS Waterdata system"
+      persistent-hint
+      class="pb-4"
+    ></v-textarea>
 
-    <v-text-field v-model="example_pid" label="Example PID" required variant="outlined"
-      hint="Example: https://geoconnex.us/usgs/monitoring-location/08383500" persistent-hint
-      class="pb-4"></v-text-field>
+    <v-text-field
+      v-model="example_pid"
+      label="Example PID"
+      required
+      variant="outlined"
+      hint="Example: https://geoconnex.us/usgs/monitoring-location/08383500"
+      persistent-hint
+      class="pb-4"
+    ></v-text-field>
 
-    <v-text-field v-model="example_redirect_target" label="Example redirect target url" type="url" variant="outlined"
-      hint="Example: https://waterdata.usgs.gov/monitoring-location/08383500" persistent-hint
-      class="pb-4"></v-text-field>
+    <v-text-field
+      v-model="example_redirect_target"
+      label="Example redirect target url"
+      type="url"
+      variant="outlined"
+      hint="Example: https://waterdata.usgs.gov/monitoring-location/08383500"
+      persistent-hint
+      class="pb-4"
+    ></v-text-field>
 
-    <v-text-field v-model="contact_name" label="Contact name" hint="Example: John Smith" required variant="outlined"
-      class="pb-4"></v-text-field>
+    <v-text-field
+      v-model="contact_name"
+      label="Contact name"
+      hint="Example: John Smith"
+      required
+      variant="outlined"
+      class="pb-4"
+    ></v-text-field>
 
-    <v-text-field v-model="contact_email" label="Contact email" append-inner-icon="mdi-email" required
-      variant="outlined" type="email" hint="Example: user@usgs.gov"></v-text-field>
+    <v-text-field
+      v-model="contact_email"
+      label="Contact email"
+      append-inner-icon="mdi-email"
+      required
+      variant="outlined"
+      type="email"
+      hint="Example: user@usgs.gov"
+    ></v-text-field>
   </div>
 
   <v-alert type="error" class="w-50 mx-auto" v-if="!valid" icon="mdi-alert">
     {{ error }}
   </v-alert>
-
 </template>
 
 <script lang="ts">
@@ -56,7 +100,7 @@ export default defineComponent({
   data() {
     return {
       homepage: '',
-      namespace: "",
+      namespace: '',
       description: '',
       example_pid: '',
       example_redirect_target: '',
@@ -73,7 +117,6 @@ export default defineComponent({
   },
 
   computed: {
-
     valid() {
       if (this.namespace.length == 0) {
         this.error = 'Namespace is required'
@@ -130,8 +173,6 @@ export default defineComponent({
       this.error = ''
       return true
     }
-  },
-}
-
-)
+  }
+})
 </script>
