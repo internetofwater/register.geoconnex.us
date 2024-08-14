@@ -27,7 +27,7 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
             <h2 class="text-center">Upload your CSV Mapping</h2>
 
             <p class="pa-4 text-center mx-auto w-66">
-              Geoconnex will use your CSV to map your data resources Geoconnex ids. It will use the
+              Geoconnex will use your CSV to associate your data resources to unique Geoconnex ids. It will also use the
               target URL you supply to access each feature for the purpose of constructing the
               Geoconnex knowledge graph.
             </p>
