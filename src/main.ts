@@ -8,6 +8,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import App from './App.vue'
 import colors from 'vuetify/util/colors'
+import { createPinia } from 'pinia'
 
 const buttonColor = '#00A087'
 
@@ -47,5 +48,6 @@ const vuetify = createVuetify({
 const app = createApp(App)
 app.use(vuetify)
 app.use(router)
+app.use(createPinia())
 
 app.mount('#app')

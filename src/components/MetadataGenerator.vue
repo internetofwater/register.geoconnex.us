@@ -1,5 +1,79 @@
 <script setup lang="ts">
-import { fetchAllNamespaces } from '@/lib/helpers'
+import { ref, computed, onMounted, watch } from 'vue'
+import { fetchAllNamespaces, generateReadMe } from '@/lib/helpers'
+import { useFormStore } from '@/stores/formStore'
+import type { MarkdownSection } from '@/lib/types'
+
+const state = useFormStore()
+
+const homepage = ref('')
+const description = ref('')
+const example_pid = ref('')
+const example_redirect_target = ref('')
+const contact_name = ref('')
+const contact_email = ref('')
+const readmeAlreadyUploaded = ref(false)
+const existingNamespaces = ref<string[]>([])
+
+
+onMounted(async () => {
+  existingNamespaces.value = await fetchAllNamespaces()
+})
+
+const isFormValid = computed(() => {
+  if (!state.namespace) {
+    return { type: 'error', text: 'Namespace is required' }
+  }
+
+  if (state.namespace.length === 0) return { type: 'error', text: 'Namespace is required' } 
+
+  if (!readmeAlreadyUploaded.value) {
+    const requiredReadmeFields: MarkdownSection[] = [
+      { body: homepage.value, sectionName: 'Homepage' },
+      { body: description.value, sectionName: 'Description' },
+      { body: example_pid.value, sectionName: 'Example PID' },
+      { body: example_redirect_target.value, sectionName: 'Example redirect target URL' },
+      { body: contact_name.value, sectionName: 'Contact name' },
+      { body: contact_email.value, sectionName: 'Contact email' }
+    ]
+
+    for (const field of requiredReadmeFields) {
+      if (field.body.length === 0) return { type: 'error', text: `${field.sectionName} is required` }
+    }
+  }
+
+  return { type: 'success', text: '' }
+})
+
+state.blockNext = isFormValid.value.type === 'error'
+watch(isFormValid, (newVal) => {
+  state.blockNext = newVal.type === 'error'
+})
+
+function setReadme() {
+  if (isFormValid.value.type !== 'success') {
+    return 
+  }
+
+  if (!readmeAlreadyUploaded.value) {
+    const requiredReadmeFields: MarkdownSection[] = [
+      { body: homepage.value, sectionName: 'Homepage' },
+      { body: description.value, sectionName: 'Description' },
+      { body: example_pid.value, sectionName: 'Example PID' },
+      { body: example_redirect_target.value, sectionName: 'Example redirect target URL' },
+      { body: contact_name.value, sectionName: 'Contact name' },
+      { body: contact_email.value, sectionName: 'Contact email' }
+    ]
+
+    const generatedReadme = generateReadMe(state.namespace, requiredReadmeFields)
+    state.readme = new File([generatedReadme], 'README.md', { type: 'text/plain' })
+  }
+}
+
+// Watch the fields and update the README whenever any of them changes
+watch(isFormValid, () => {
+  setReadme()
+})
 </script>
 
 <template>
@@ -15,7 +89,7 @@ import { fetchAllNamespaces } from '@/lib/helpers'
     required
     :items="existingNamespaces"
     variant="outlined"
-    v-model="namespace"
+    v-model="state.namespace"
   />
 
   <v-switch
@@ -101,94 +175,7 @@ import { fetchAllNamespaces } from '@/lib/helpers'
     </v-row>
   </div>
 
-  <v-alert type="error" class="w-50 mx-auto" v-if="!valid" icon="mdi-alert">
-    {{ error }}
+  <v-alert type="error" class="w-50 mx-auto" v-if="isFormValid.type === 'error'" icon="mdi-alert">
+    {{ isFormValid.text }}
   </v-alert>
 </template>
-
-<script lang="ts">
-import { generateReadMe } from '@/lib/helpers'
-import type { MarkdownSection } from '@/lib/types'
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  emits: ['result'],
-  data() {
-    return {
-      homepage: '',
-      namespace: '',
-      description: '',
-      example_pid: '',
-      example_redirect_target: '',
-      contact_name: '',
-      contact_email: '',
-      readmeAlreadyUploaded: false,
-      existingNamespaces: [] as string[],
-      error: '',
-      file: null as File | null
-    }
-  },
-  async created() {
-    this.existingNamespaces = await fetchAllNamespaces()
-  },
-
-  computed: {
-    valid() {
-      if (this.namespace.length == 0) {
-        this.error = 'Namespace is required'
-        this.$emit('result', {
-          readme: null,
-          namespace: this.namespace,
-          blockNext: true
-        })
-        return false
-      }
-
-      if (!this.readmeAlreadyUploaded) {
-        const requiredReadmeFields: MarkdownSection[] = [
-          { body: this.homepage, sectionName: 'Homepage' },
-          { body: this.description, sectionName: 'Description' },
-          { body: this.example_pid, sectionName: 'Example PID' },
-          { body: this.example_redirect_target, sectionName: 'Example redirect target URL' },
-          { body: this.contact_name, sectionName: 'Contact name' },
-          { body: this.contact_email, sectionName: 'Contact email' }
-        ]
-
-        for (const field of requiredReadmeFields) {
-          if (field.body.length == 0) {
-            this.error = `${field.sectionName} is required`
-            this.$emit('result', {
-              readme: null,
-              namespace: this.namespace,
-              blockNext: true
-            })
-            return false
-          }
-        }
-
-        const generatedReadme = generateReadMe(this.namespace, requiredReadmeFields)
-        this.file = new File([generatedReadme], 'README.md', { type: 'text/plain' })
-        this.error = ''
-        this.$emit('result', {
-          readme: this.file,
-          namespace: this.namespace,
-          blockNext: false
-        })
-      }
-      // If the user didn't add a readme, just return the namespace
-      else {
-        this.$emit('result', {
-          readme: null,
-          namespace: this.namespace,
-          blockNext: false
-        })
-      }
-
-      // after handling all emit logic, make sure the form is not in an invalid state
-      // since we didn't return early, we know it is true
-      this.error = ''
-      return true
-    }
-  }
-})
-</script>
