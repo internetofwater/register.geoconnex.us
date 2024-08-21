@@ -15,7 +15,6 @@ const contact_email = ref('')
 const readmeAlreadyUploaded = ref(false)
 const existingNamespaces = ref<string[]>([])
 
-
 onMounted(async () => {
   existingNamespaces.value = await fetchAllNamespaces()
 })
@@ -25,7 +24,7 @@ const isFormValid = computed(() => {
     return { type: 'error', text: 'Namespace is required' }
   }
 
-  if (state.namespace.length === 0) return { type: 'error', text: 'Namespace is required' } 
+  if (state.namespace.length === 0) return { type: 'error', text: 'Namespace is required' }
 
   if (!readmeAlreadyUploaded.value) {
     const requiredReadmeFields: MarkdownSection[] = [
@@ -38,7 +37,8 @@ const isFormValid = computed(() => {
     ]
 
     for (const field of requiredReadmeFields) {
-      if (field.body.length === 0) return { type: 'error', text: `${field.sectionName} is required` }
+      if (field.body.length === 0)
+        return { type: 'error', text: `${field.sectionName} is required` }
     }
   }
 
@@ -52,7 +52,7 @@ watch(isFormValid, (newVal) => {
 
 function setReadme() {
   if (isFormValid.value.type !== 'success') {
-    return 
+    return
   }
 
   if (!readmeAlreadyUploaded.value) {

@@ -12,19 +12,22 @@ import type { ValidationReport } from '@/lib/types'
 const state = useFormStore()
 
 const checkResult = reactive({
-  type: undefined as 'Issues checking CSV' | 'Error submitting data' | 'Checked CSV without errors' | 'No errors checking CSV' | undefined,
+  type: undefined as
+    | 'Issues checking CSV'
+    | 'Error submitting data'
+    | 'Checked CSV without errors'
+    | 'No errors checking CSV'
+    | undefined,
   description: '',
   level: undefined as 'error' | 'warning' | 'info' | 'success' | undefined
 })
-
 
 const result = ref('')
 const progress = reactive({ running: false, action: '' })
 const crawlErrors = ref<ValidationReport['crawlErrors']>([])
 
-
 watch([progress, checkResult], (newVal) => {
-  state.blockNext = newVal[0].running === true  || newVal[1].type === 'Issues checking CSV'
+  state.blockNext = newVal[0].running === true || newVal[1].type === 'Issues checking CSV'
 })
 
 async function checkCSV() {
@@ -52,7 +55,8 @@ async function checkCSV() {
     return false
   } else {
     checkResult.type = 'Checked CSV without errors'
-    checkResult.description = 'Note: automated tests do not check regex URLs. If you have these, please validate any complex logic independently.'
+    checkResult.description =
+      'Note: automated tests do not check regex URLs. If you have these, please validate any complex logic independently.'
     checkResult.level = 'info'
     progress.running = false
     progress.action = ''

@@ -131,7 +131,11 @@ export async function createPR(
   return prResponse
 }
 
-export async function submitData(namespace: string, file: File, readme: File | null): Promise<string> {
+export async function submitData(
+  namespace: string,
+  file: File,
+  readme: File | null
+): Promise<string> {
   const token = Config.token()
 
   const headers = {
@@ -171,7 +175,7 @@ export async function submitData(namespace: string, file: File, readme: File | n
       readmeFilePath,
       readmeContent
     )
-    console.log("Uploading readme")
+    console.log('Uploading readme')
     await uploadData(
       headers,
       repo,
