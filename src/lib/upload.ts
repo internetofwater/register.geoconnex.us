@@ -131,7 +131,11 @@ export async function createPR(
   return prResponse
 }
 
-export async function submitData(namespace: string, file: File, readme?: File): Promise<string> {
+export async function submitData(
+  namespace: string,
+  file: File,
+  readme: File | null
+): Promise<string> {
   const token = Config.token()
 
   const headers = {
@@ -161,7 +165,7 @@ export async function submitData(namespace: string, file: File, readme?: File): 
     validatedSha
   )
 
-  if (readme) {
+  if (readme !== null) {
     const readmeContent = await readme.text()
     const readmeB64Content = btoa(readmeContent)
     const readmeFilePath = `namespaces/${namespace}/README.md`
@@ -171,6 +175,7 @@ export async function submitData(namespace: string, file: File, readme?: File): 
       readmeFilePath,
       readmeContent
     )
+    console.log('Uploading readme')
     await uploadData(
       headers,
       repo,

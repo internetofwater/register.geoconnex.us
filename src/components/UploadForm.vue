@@ -1,9 +1,104 @@
-<!-- eslint-disable vue/valid-v-slot -->
 <script setup lang="ts">
+import { ref, reactive, watch } from 'vue'
 import URLCheckSummary from '@/components/URLCheckSummary.vue'
 import CSVReference from '@/components/CSVReference.vue'
 import GeoconnexBackground from '@/components/GeoconnexBackground.vue'
 import MetadataGenerator from '@/components/MetadataGenerator.vue'
+import { useFormStore } from '@/stores/formStore'
+import { validGeoconnexCSV } from '@/lib/helpers'
+import { submitData } from '@/lib/upload'
+import type { ValidationReport } from '@/lib/types'
+
+const state = useFormStore()
+
+const checkResult = reactive({
+  type: undefined as
+    | 'Issues checking CSV'
+    | 'Error submitting data'
+    | 'Checked CSV without errors'
+    | 'No errors checking CSV'
+    | undefined,
+  description: '',
+  level: undefined as 'error' | 'warning' | 'info' | 'success' | undefined
+})
+
+const result = ref('')
+const progress = reactive({ running: false, action: '' })
+const crawlErrors = ref<ValidationReport['crawlErrors']>([])
+
+watch([progress, checkResult], (newVal) => {
+  state.blockNext = newVal[0].running === true || newVal[1].type === 'Issues checking CSV'
+})
+
+async function checkCSV() {
+  progress.running = true
+  progress.action = 'Validating your CSV data. This may take a minute...'
+
+  if (!state.csv) {
+    checkResult.type = 'Issues checking CSV'
+    checkResult.description = 'CSV file is required'
+    checkResult.level = 'warning'
+    progress.running = false
+    progress.action = ''
+    return false
+  }
+
+  const { valid, errorSummary, crawlErrors: errors } = await validGeoconnexCSV(state.csv)
+  crawlErrors.value = errors
+
+  if (!valid) {
+    checkResult.type = 'Issues checking CSV'
+    checkResult.description = errorSummary
+    checkResult.level = 'warning'
+    progress.running = false
+    progress.action = ''
+    return false
+  } else {
+    checkResult.type = 'Checked CSV without errors'
+    checkResult.description =
+      'Note: automated tests do not check regex URLs. If you have these, please validate any complex logic independently.'
+    checkResult.level = 'info'
+    progress.running = false
+    progress.action = ''
+    return true
+  }
+}
+
+function overrideError() {
+  checkResult.type = undefined
+  checkResult.description = ''
+  checkResult.level = undefined
+  crawlErrors.value = []
+  progress.running = false
+}
+
+async function submitForm() {
+  result.value = ''
+  progress.running = false
+  progress.action = ''
+
+  if (!state.csv) {
+    checkResult.type = 'Error submitting data'
+    checkResult.description = 'CSV file is required'
+    checkResult.level = 'error'
+    return
+  }
+
+  try {
+    progress.running = true
+    progress.action = 'Uploading your data to the Geoconnex registry.'
+    const submissionResult = await submitData(state.namespace, state.csv, state.readme)
+    result.value = submissionResult
+  } catch (error) {
+    checkResult.type = 'Error submitting data'
+    checkResult.description = error instanceof Error ? error.message : String(error)
+    checkResult.level = 'error'
+    result.value = ''
+  } finally {
+    progress.running = false
+    progress.action = ''
+  }
+}
 </script>
 
 <template>
@@ -17,7 +112,7 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
             'Step 3: Add CSV',
             'Step 4: Submit'
           ]"
-          :hide-actions="hideNext"
+          :hide-actions="state.blockNext"
           color="header"
         >
           <template v-slot:item.1>
@@ -26,8 +121,7 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
 
           <template v-slot:item.2>
             <h2 class="mb-4 text-center">Add Metadata for your CSV Contribution</h2>
-
-            <MetadataGenerator :namespace="namespace" @result="setMetadata" />
+            <MetadataGenerator />
           </template>
 
           <template v-slot:item.3>
@@ -40,7 +134,7 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
             </p>
 
             <v-file-input
-              v-model="csv"
+              v-model="state.csv"
               label="CSV Mapping"
               accept=".csv"
               required
@@ -60,11 +154,11 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
 
             <v-fade-transition class="mx-auto w-66">
               <v-alert
-                :color="checkError.level || 'error'"
-                :icon="`$${checkError.level || 'error'}`"
-                :title="checkError.type"
-                :text="checkError.text"
-                v-if="checkError.type && !progress.running"
+                :color="checkResult.level || 'error'"
+                :icon="`$${checkResult.level || 'error'}`"
+                :title="checkResult.type"
+                :text="checkResult.description"
+                v-if="checkResult.type && !progress.running"
               >
               </v-alert>
               <v-alert
@@ -72,12 +166,12 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
                 icon="$success"
                 title="Data mapping submitted"
                 :text="result"
-                v-if="checkError.type == null && result && !progress.running"
+                v-if="checkResult.type == null && result && !progress.running"
               ></v-alert>
             </v-fade-transition>
 
             <v-btn
-              v-if="checkError.type === 'Issues Checking CSV' && !progress.running"
+              v-if="checkResult.type === 'Issues checking CSV' && !progress.running"
               @click="overrideError"
               class="my-6 d-flex mx-auto ignoreButton"
             >
@@ -107,13 +201,13 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
 
             <v-fade-transition class="mt-4 mx-auto w-66">
               <v-alert
-                :color="checkError.level || 'error'"
-                :icon="`$${checkError.level || 'error'}`"
-                :title="checkError.type"
-                :text="checkError.text"
+                :color="checkResult.level || 'error'"
+                :icon="`$${checkResult.level || 'error'}`"
+                :title="checkResult.type"
+                :text="checkResult.description"
                 v-if="
-                  checkError.type != 'Checked CSV without errors' &&
-                  checkError.type &&
+                  checkResult.type != 'Checked CSV without errors' &&
+                  checkResult.type &&
                   !progress.running
                 "
               >
@@ -123,7 +217,7 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
                 icon="$success"
                 title="Data Submitted"
                 :text="result"
-                v-if="checkError.type == null && result && !progress.running"
+                v-if="checkResult.type == null && result && !progress.running"
               ></v-alert>
             </v-fade-transition>
 
@@ -136,123 +230,6 @@ import MetadataGenerator from '@/components/MetadataGenerator.vue'
     </v-row>
   </v-container>
 </template>
-
-<script lang="ts">
-import { submitData } from '@/lib/upload'
-import { defineComponent } from 'vue'
-import { validGeoconnexCSV } from '@/lib/helpers'
-import type { ValidationReport } from '@/lib/types'
-
-interface CheckError {
-  type: 'Issues Checking CSV' | 'Error submitting data' | 'Checked CSV without errors' | undefined
-  text: string
-  level?: 'error' | 'warning' | 'info'
-}
-
-export default defineComponent({
-  data() {
-    return {
-      namespace: '',
-      csv: null as File | null,
-      readme: null as File | null,
-      checkError: {} as CheckError,
-      result: '',
-      progress: { running: false, action: '' },
-      crawlErrors: [] as ValidationReport['crawlErrors'],
-      existingNamespaces: [] as string[],
-      blockNext: false
-    }
-  },
-  computed: {
-    hideNext() {
-      return (
-        this.checkError.type === 'Issues Checking CSV' || this.progress.running || this.blockNext
-      )
-    }
-  },
-
-  methods: {
-    async checkCSV() {
-      this.progress = {
-        running: true,
-        action: 'Validating your CSV data. This may take a minute...'
-      }
-
-      if (!this.csv) {
-        return
-      }
-      const { valid, errorSummary, crawlErrors } = await validGeoconnexCSV(this.csv)
-      this.crawlErrors = crawlErrors
-
-      if (!valid) {
-        if (this.crawlErrors !== undefined) {
-          this.progress = { running: false, action: '' }
-          this.checkError = {
-            type: 'Issues Checking CSV',
-            text: errorSummary as string,
-            level: 'warning'
-          }
-          return false
-        }
-      } else {
-        this.checkError = {
-          type: 'Checked CSV without errors',
-          text: 'Note: automated tests do not check regex URLs. If you have these, please validate any complex logic independently.',
-          level: 'info'
-        }
-        this.progress = { running: false, action: '' }
-        return true
-      }
-    },
-
-    async valid() {
-      if (!this.csv) {
-        return false
-      }
-
-      this.progress = {
-        running: true,
-        action: 'Validating your CSV data. This may take a minute...'
-      }
-    },
-    overrideError() {
-      this.checkError = { type: undefined, text: '' }
-      this.crawlErrors = []
-    },
-    setMetadata(metadata: { readme: File | null; namespace: string; blockNext?: boolean }) {
-      const { readme, namespace, blockNext } = metadata
-      this.namespace = namespace
-      this.readme = readme
-      this.blockNext = blockNext || false
-    },
-
-    async submitForm() {
-      // reset stored form state at the start of the submission before validating
-      this.result = ''
-      this.progress = { running: false, action: '' }
-
-      if (!this.csv) {
-        this.checkError = { type: 'Error submitting data', text: 'CSV file is required' }
-        return
-      }
-
-      try {
-        this.progress = { running: true, action: 'Uploading your data to the Geoconnex registry.' }
-        const result = await submitData(this.namespace, this.csv, this.readme || undefined)
-        this.result = result
-      } catch (error) {
-        this.checkError = {
-          type: 'Error submitting data',
-          text: error instanceof Error ? error.message : String(error)
-        }
-        this.result = ''
-      }
-
-      this.progress = { running: false, action: '' }
-    }
-  }
-})
-</script>
 
 <style scoped>
 .ignoreButton {

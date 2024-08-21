@@ -8,6 +8,7 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strict": true,
+    "sourceMap": true,
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
