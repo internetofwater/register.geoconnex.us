@@ -26,18 +26,18 @@
     geoconnex and a tutorial for how to:
     <ol>
       <li>
-        1. <a href="https://docs.geoconnex.us/contributing/step-1/idscheme">Prepare your data</a>
+        1. <a href="https://docs.geoconnex.us/contributing/api/step-1/">Prepare your data</a>
         with the proper metadata context
       </li>
       <li>
         2. Host your data, if you have not done so already, with
-        <a href="https://docs.geoconnex.us/contributing/step-2/">individual web pages</a>
+        <a href="https://docs.geoconnex.us/contributing/api/step-2/">individual web pages</a>
         that can be linked to as the "target" column in your uploaded CSV
       </li>
       <li>
-        3. <a href="https://docs.geoconnex.us/contributing/step-3/minting">Submit your CSV data</a>,
+        3. <a href="https://docs.geoconnex.us/contributing/api/step-3/">Submit your CSV data</a>,
         either here or Github, after checking it is
-        <a href="https://docs.geoconnex.us/reference/data-formats/csv-submissions/">
+        <a href="https://docs.geoconnex.us/reference/data-formats/shacl_shape">
           properly formatted</a
         >
       </li>
